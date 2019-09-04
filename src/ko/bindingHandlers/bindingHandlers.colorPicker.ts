@@ -8,12 +8,12 @@ ko.bindingHandlers["colorPicker"] = {
         const pickr = Pickr.create({
             el: element,
             theme: "classic", 
-            container: "#abcde",
+            container: element.parentElement,
             default: config.selectedColor(),
             defaultRepresentation: "HEX",
             showAlways: true,
             useAsButton: false,
-            // position: "right",
+            position: "right",
             components: {
                 preview: true,
                 opacity: true,
