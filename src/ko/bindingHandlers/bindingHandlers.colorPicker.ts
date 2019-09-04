@@ -1,16 +1,19 @@
 import * as ko from "knockout";
-import * as Pickr from "pickr-widget";
+import * as Pickr from "@simonwep/pickr";
 
 ko.bindingHandlers["colorPicker"] = {
     init: (element: HTMLElement, valueAccessor) => {
         const config = valueAccessor();
 
-        const pickr = new Pickr({
+        const pickr = Pickr.create({
             el: element,
+            theme: "classic", 
+            container: "#abcde",
             default: config.selectedColor(),
             defaultRepresentation: "HEX",
             showAlways: true,
-            position: "right",
+            useAsButton: false,
+            // position: "right",
             components: {
                 preview: true,
                 opacity: true,
@@ -24,7 +27,7 @@ ko.bindingHandlers["colorPicker"] = {
                     save: false
                 }
             },
-            onChange(hsva) {
+            onChange(hsva: any): void {
                 if (config.selectedColor) {
                     config.selectedColor(hsva.toRGBA().toString());
                 }
