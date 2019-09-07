@@ -1,4 +1,5 @@
 export * from "../plugins/animation/animationContract";
+export * from "../plugins/size/sizeStylePluginConfig";
 export * from "./backgroundContract";
 export * from "./linearGradientContract";
 export * from "./borderContract";

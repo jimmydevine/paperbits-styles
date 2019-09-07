@@ -18,7 +18,10 @@ import {
     StatesStylePlugin,
     ContainerStylePlugin,
     SizeStylePlugin,
-    TransitionStylePlugin
+    TransitionStylePlugin,
+    StickToStylePlugin,
+    PaddingStylePlugin,
+    TransformStylePlugin
 } from "./plugins";
 import jss from "jss";
 import preset from "jss-preset-default";
@@ -26,8 +29,6 @@ import { GridStylePlugin } from "./plugins/grid/gridStylePlugin";
 import { GridCellStylePlugin } from "./plugins/grid/gridCellStylePlugin";
 import { Style, StyleSheet, StyleMediaQuery, IStyleCompiler, StyleModel, StyleRule } from "@paperbits/common/styles";
 import { JssCompiler } from "./jssCompiler";
-import { PaddingStylePlugin } from "./plugins/padding";
-import { TransformStylePlugin } from "./plugins/transform";
 
 const opts = preset();
 
@@ -81,6 +82,7 @@ export class StyleCompiler implements IStyleCompiler {
         this.plugins["size"] = new SizeStylePlugin();
         this.plugins["transform"] = new TransformStylePlugin();
         this.plugins["transition"] = new TransitionStylePlugin();
+        this.plugins["stickTo"] = new StickToStylePlugin();
     }
 
     /**
