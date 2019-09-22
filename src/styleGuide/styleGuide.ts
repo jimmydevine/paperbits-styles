@@ -336,7 +336,9 @@ export class StyleGuide {
 
         const elements = Utils.elementsFromPoint(this.ownerDocument, this.pointerX, this.pointerY);
 
-        const element = elements.find(x => x["stylable"]);
+        const element =  this.activeHighlightedElement;
+
+        // const element = elements.find(x => x["stylable"]);
 
         if (!element || !element["stylable"]) {
             return;
@@ -358,7 +360,7 @@ export class StyleGuide {
                 this.selectStyle(style);
         }
         else {
-            const contextualEditor = this.getContextualEditor(stylable);
+            const contextualEditor = this.getContextualEditor(element, stylable);
 
             if (!contextualEditor || contextualEditor.selectCommands.length === 0) {
                 return;
@@ -370,7 +372,7 @@ export class StyleGuide {
                 color: contextualEditor.color
             };
 
-            contextualEditor.element = element;
+            // contextualEditor.element = element;
 
             this.viewManager.setSelectedElement(config, contextualEditor);
         }
@@ -392,13 +394,14 @@ export class StyleGuide {
         this.renderHighlightedElements();
     }
 
-    private getContextualEditor(stylable: { style: any; toggleBackground: () => void; }): IContextCommandSet {
+    private getContextualEditor(element: HTMLElement, stylable: { style: any; toggleBackground: () => void; }): IContextCommandSet {
         const style = stylable.style;
 
         const styleContextualEditor: IContextCommandSet = {
             color: "#607d8b",
             deleteCommand: null,
-            selectCommands: []
+            selectCommands: [],
+            element: element
         };
 
         if ((!style.key.startsWith("globals/") || style.key.startsWith("globals/body/")) &&
@@ -516,7 +519,7 @@ export class StyleGuide {
             highlightedText = style.displayName;
 
             const active = this.actives[style.key];
-            const contextualEditor = this.getContextualEditor(stylable);
+            const contextualEditor = this.getContextualEditor(element, stylable);
 
             highlightColor = contextualEditor.color;
 
