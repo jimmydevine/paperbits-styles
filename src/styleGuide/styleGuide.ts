@@ -3,7 +3,7 @@ import * as Utils from "@paperbits/common";
 import * as _ from "lodash";
 import template from "./styleGuide.html";
 import { IEventManager } from "@paperbits/common/events";
-import { Component, OnMounted } from "@paperbits/common/ko/decorators";
+import { Component, OnMounted, OnDestroyed } from "@paperbits/common/ko/decorators";
 import { IStyleGroup } from "@paperbits/common/styles";
 import { IView, IViewManager, ViewManagerMode, IHighlightConfig, IContextCommandSet } from "@paperbits/common/ui";
 import { StyleService } from "../styleService";
@@ -277,6 +277,7 @@ export class StyleGuide {
         // this.ownerDocument.addEventListener("keydown", this.onKeyDown);
     }
 
+    @OnDestroyed()
     public dispose(): void {
         this.ownerDocument.removeEventListener("mousemove", this.onPointerMove.bind(this), true);
         this.ownerDocument.removeEventListener("scroll", this.onWindowScroll.bind(this));
