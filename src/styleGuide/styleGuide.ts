@@ -191,7 +191,7 @@ export class StyleGuide {
 
     public async openInEditor(componentName: string, snippet?: any): Promise<void> {
         const variationName = `${Utils.identifier().toLowerCase()}`; // TODO: Replace name with kebab-like name.
-        const addedStyleKey = componentName !== "navbar" ? 
+        const addedStyleKey = componentName !== "navbar" ?
             await this.styleService.addComponentVariation(componentName, variationName, snippet) :
             await this.styleService.addNavbarVariation(variationName);
         const addedStyle = await this.styleService.getStyleByKey(addedStyleKey);
@@ -234,7 +234,7 @@ export class StyleGuide {
                 return undefined;
             }
             const componentStyles = styles.components[componentName];
-            const states = this.styleService.getAllowedStates(componentStyles);  
+            const states = this.styleService.getAllowedStates(componentStyles);
             const variations = Object.keys(componentStyles).map(variationName => {
                 const variationContract = componentStyles[variationName];
                 if (states && variationName !== "default") {
@@ -315,7 +315,7 @@ export class StyleGuide {
 
         const elements = Utils.elementsFromPoint(this.ownerDocument, this.pointerX, this.pointerY);
 
-        this.rerenderEditors(this.pointerX, this.pointerY, elements);
+        this.rerenderEditors(elements);
     }
 
     private onPointerDown(event: MouseEvent): void {
@@ -337,7 +337,7 @@ export class StyleGuide {
 
         const elements = Utils.elementsFromPoint(this.ownerDocument, this.pointerX, this.pointerY);
 
-        const element =  this.activeHighlightedElement;
+        const element = this.activeHighlightedElement;
 
         // const element = elements.find(x => x["stylable"]);
 
@@ -385,12 +385,6 @@ export class StyleGuide {
 
         this.pointerX = event.clientX;
         this.pointerY = event.clientY;
-
-        const elements = Utils.elementsFromPoint(this.ownerDocument, this.pointerX, this.pointerY);
-
-        if (elements.length === 0) {
-            return;
-        }
 
         this.renderHighlightedElements();
     }
@@ -496,7 +490,7 @@ export class StyleGuide {
         return styleContextualEditor;
     }
 
-    private async rerenderEditors(pointerX: number, pointerY: number, elements: HTMLElement[]): Promise<void> {
+    private async rerenderEditors(elements: HTMLElement[]): Promise<void> {
         let highlightedElement: HTMLElement;
         let highlightedText: string;
         let highlightColor: string;
