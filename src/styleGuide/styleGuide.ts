@@ -452,9 +452,8 @@ export class StyleGuide {
             !style.key.startsWith("fonts/") &&
             !style.key.startsWith("shadows/") &&
             !style.key.startsWith("gradients/") &&
-            !style.key.contains("/components/") // subcomponents
+            !style.key.contains("/components/") // sub-components
         ) {
-            
             styleContextualEditor.selectCommands.push({
                 tooltip: "Change background",
                 iconClass: "paperbits-drop",
