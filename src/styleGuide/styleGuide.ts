@@ -191,10 +191,9 @@ export class StyleGuide {
 
     public async openInEditor(componentName: string, snippet?: any): Promise<void> {
         const variationName = `${Utils.identifier().toLowerCase()}`; // TODO: Replace name with kebab-like name.
-        const addedStyleKey = componentName !== "navbar" ?
-            await this.styleService.addComponentVariation(componentName, variationName, snippet) :
-            await this.styleService.addNavbarVariation(variationName);
+        const addedStyleKey = await this.styleService.addComponentVariation(componentName, variationName, snippet);
         const addedStyle = await this.styleService.getStyleByKey(addedStyleKey);
+
         this.selectStyle(addedStyle);
 
         this.applyChanges();
@@ -227,23 +226,38 @@ export class StyleGuide {
 
     public async getComponentsStyles(): Promise<ComponentStyle[]> {
         const styles = await this.styleService.getStyles();
-        const result = Object.keys(styles.components).map<ComponentStyle>(componentName => {
-            const groupMetadata = this.styleGroups.find(item => item.name === `components_${componentName}`);
-            if (!groupMetadata || !groupMetadata.styleTemplate) {
-                // console.warn("metadata not found for component:", componentName);
-                return undefined;
-            }
-            const componentStyles = styles.components[componentName];
-            const states = this.styleService.getAllowedStates(componentStyles);
-            const variations = Object.keys(componentStyles).map(variationName => {
-                const variationContract = componentStyles[variationName];
-                if (states && variationName !== "default") {
-                    variationContract["allowedStates"] = states;
+
+        const result = Object.keys(styles.components)
+            .map<ComponentStyle>(componentName => {
+                const groupMetadata = this.styleGroups.find(item => item.name === `components_${componentName}`);
+
+                if (!groupMetadata || !groupMetadata.styleTemplate) {
+                    // console.warn("metadata not found for component:", componentName);
+                    return undefined;
                 }
-                return variationContract;
-            });
-            return { name: componentName, displayName: groupMetadata.groupName, variations: variations, itemTemplate: groupMetadata.styleTemplate };
-        }).filter(item => item !== undefined);
+
+                const componentStyles = styles.components[componentName];
+                const states = this.styleService.getAllowedStates(componentStyles);
+                
+                const variations = Object.keys(componentStyles).map(variationName => {
+                    const variationContract = componentStyles[variationName];
+
+                    if (states && variationName !== "default") {
+                        variationContract["allowedStates"] = states;
+                    }
+
+                    return variationContract;
+                });
+
+                return {
+                    name: componentName,
+                    displayName: groupMetadata.groupName,
+                    variations: variations,
+                    itemTemplate: groupMetadata.styleTemplate
+                };
+            })
+            .filter(item => item !== undefined);
+
         return result;
     }
 
