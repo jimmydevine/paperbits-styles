@@ -186,19 +186,24 @@ export class StyleService {
         const styles = await this.getStyles();
 
         let categoryStyles: { [x: string]: any; };
+
         if (subCategoryName) {
             categoryStyles = styles[categoryName][subCategoryName];
-        } else {
+        }
+        else {
             categoryStyles = styles[categoryName];
         }
+        
         const category = Object.keys(categoryStyles);
         const states = this.getAllowedStates(categoryStyles);
 
         const variations = category.map(variationName => {
             const variationContract = categoryStyles[variationName];
+
             if (states && variationName !== "default") {
                 variationContract["allowedStates"] = states;
             }
+
             return variationContract;
         });
 

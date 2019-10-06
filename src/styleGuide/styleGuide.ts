@@ -238,7 +238,7 @@ export class StyleGuide {
 
                 const componentStyles = styles.components[componentName];
                 const states = this.styleService.getAllowedStates(componentStyles);
-                
+
                 const variations = Object.keys(componentStyles).map(variationName => {
                     const variationContract = componentStyles[variationName];
 
@@ -451,8 +451,10 @@ export class StyleGuide {
         if (!style.key.startsWith("colors/") &&
             !style.key.startsWith("fonts/") &&
             !style.key.startsWith("shadows/") &&
-            !style.key.startsWith("gradients/")
+            !style.key.startsWith("gradients/") &&
+            !style.key.contains("/components/") // subcomponents
         ) {
+            
             styleContextualEditor.selectCommands.push({
                 tooltip: "Change background",
                 iconClass: "paperbits-drop",
