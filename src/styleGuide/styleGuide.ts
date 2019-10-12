@@ -2,7 +2,7 @@ import * as ko from "knockout";
 import * as Utils from "@paperbits/common";
 import * as _ from "lodash";
 import template from "./styleGuide.html";
-import { IEventManager } from "@paperbits/common/events";
+import { EventManager } from "@paperbits/common/events";
 import { Component, OnMounted, OnDestroyed } from "@paperbits/common/ko/decorators";
 import { IStyleGroup } from "@paperbits/common/styles";
 import { IView, IViewManager, ViewManagerMode, IHighlightConfig, IContextCommandSet } from "@paperbits/common/ui";
@@ -42,7 +42,7 @@ export class StyleGuide {
     constructor(
         private readonly styleService: StyleService,
         private readonly viewManager: IViewManager,
-        private readonly eventManager: IEventManager,
+        private readonly eventManager: EventManager,
         private readonly styleGroups: IStyleGroup[]
     ) {
         this.styles = ko.observable();
