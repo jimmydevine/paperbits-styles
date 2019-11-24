@@ -45,7 +45,6 @@ export class StylableBindingHandler {
                 };
 
                 const styleable: Styleable = {
-                    styleKey: style.key,
                     style: style,
                     toggleBackground: toggleBackground
                 };

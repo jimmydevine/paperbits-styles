@@ -25,16 +25,16 @@ export class StyleService {
             throw new Error("Data doesn't contain styles.");
         }
 
-        this.defaultStyles.forEach(x => {
-            if (x.migrate) {
-                x.migrate(stylesObject.components[x.key]);
+        this.defaultStyles.forEach(styleHandler => {
+            if (styleHandler.migrate) {
+                styleHandler.migrate(stylesObject.components[styleHandler.key]);
             }
 
-            if (stylesObject.components[x.key]) {
+            if (stylesObject.components[styleHandler.key]) {
                 return;
             }
 
-            stylesObject.components[x.key] = x.style;
+            stylesObject.components[styleHandler.key] = styleHandler.getDefaultStyle(styleHandler.key);
         });
 
         return stylesObject;
