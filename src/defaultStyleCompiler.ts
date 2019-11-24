@@ -27,7 +27,7 @@ import jss from "jss";
 import preset from "jss-preset-default";
 import { GridStylePlugin } from "./plugins/grid/gridStylePlugin";
 import { GridCellStylePlugin } from "./plugins/grid/gridCellStylePlugin";
-import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule, VariationsContract, StatesContract } from "@paperbits/common/styles";
+import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule, VariationsContract, StatesContract, LocalStyles } from "@paperbits/common/styles";
 import { JssCompiler } from "./jssCompiler";
 import { ThemeContract } from "./contracts/themeContract";
 
@@ -85,7 +85,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
 
                     if (plugin.setThemeContract) {
                         plugin.setThemeContract(themeContract);
-                    } 
+                    }
                     else {
                         console.error(`Plugin ${pluginName} does not support setThemeContract`);
                     }
@@ -369,36 +369,39 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return Utils.camelCaseToKebabCase(colorKey.replaceAll("/", "-"));
     }
 
-    public async getClassNamesByStyleConfigAsync(styleConfig: any): Promise<string> {
+    public async getClassNamesByStyleConfigAsync(styleConfig: LocalStyles): Promise<string> {
         const classNames = [];
 
         for (const category of Object.keys(styleConfig)) {
             const categoryConfig = styleConfig[category];
 
-            if (categoryConfig) {
-                if (this.isResponsive(categoryConfig)) {
-                    for (const breakpoint of Object.keys(categoryConfig)) {
-                        let className;
+            if (!categoryConfig) {
+                continue;
+            }
 
-                        if (breakpoint === "xs") {
-                            className = await this.getClassNameByStyleKeyAsync(categoryConfig[breakpoint]);
-                        }
-                        else {
-                            className = await this.getClassNameByStyleKeyAsync(categoryConfig[breakpoint], breakpoint);
-                        }
+            if (this.isResponsive(categoryConfig)) {
+                for (const breakpoint of Object.keys(categoryConfig)) {
+                    let className;
 
-                        if (className) {
-                            classNames.push(className);
-                        }
+                    if (breakpoint === "xs") {
+                        className = await this.getClassNameByStyleKeyAsync(categoryConfig[breakpoint]);
                     }
-                }
-                else {
-                    const className = await this.getClassNameByStyleKeyAsync(categoryConfig);
+                    else {
+                        className = await this.getClassNameByStyleKeyAsync(categoryConfig[breakpoint], breakpoint);
+                    }
 
                     if (className) {
                         classNames.push(className);
                     }
                 }
+                continue;
+            }
+
+            const styleKey = <string>categoryConfig;
+            const className = await this.getClassNameByStyleKeyAsync(styleKey);
+
+            if (className) {
+                classNames.push(className);
             }
         }
 
