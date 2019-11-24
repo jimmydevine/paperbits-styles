@@ -6,7 +6,7 @@ import { EventManager } from "@paperbits/common/events";
 import { ThemeContract, ColorContract, ShadowContract, StyleItemContract } from "./contracts";
 import { StyleItem } from "./models/styleItem";
 import { ComponentStyle } from "./contracts/componentStyle";
-import { DefaultStyle } from "@paperbits/common/styles";
+import { StyleHandler } from "@paperbits/common/styles";
 
 
 const stylesPath = "styles";
@@ -15,7 +15,7 @@ export class StyleService {
     constructor(
         private readonly objectStorage: IObjectStorage,
         private readonly eventManager: EventManager,
-        private readonly defaultStyles: DefaultStyle[]
+        private readonly defaultStyles: StyleHandler[]
     ) { }
 
     public async getStyles(): Promise<ThemeContract> {
@@ -38,6 +38,32 @@ export class StyleService {
         });
 
         return stylesObject;
+    }
+
+    public async getStyleByKey(styleKey: string): Promise<any> {
+        if (!styleKey) {
+            throw new Error(`Parameter "styleKey" not specified.`);
+        }
+
+        const styles = await this.getStyles();
+
+        // TODO: If no style found, try to take default one
+
+        const style = Objects.getObjectAt<any>(styleKey, styles);
+
+        if (style) {
+            return style;
+        }
+
+        const defaultStyle = this.defaultStyles
+            .map(handler => handler.getDefaultStyle(styleKey))
+            .find(x => !!x);
+
+        if (defaultStyle) {
+            return defaultStyle;
+        }
+
+        throw new Error(`Neither style nor default can be fetched by key "${styleKey}".`);
     }
 
     public async addColorVariation(variationName: string): Promise<ColorContract> {
@@ -208,15 +234,6 @@ export class StyleService {
         });
 
         return variations;
-    }
-
-    public async getStyleByKey(styleKey: string): Promise<any> {
-        if (!styleKey) {
-            throw new Error(`Parameter "styleKey" not specified.`);
-        }
-
-        const styles = await this.getStyles();
-        return Objects.getObjectAt<any>(styleKey, styles);
     }
 
     public async removeStyle(styleKey: string): Promise<void> {
