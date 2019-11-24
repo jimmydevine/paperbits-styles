@@ -1,7 +1,7 @@
 import * as ko from "knockout";
 import template from "./styleEditor.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
-import { StyleContract, LocalStyles } from "@paperbits/common/styles";
+import { StyleContract, LocalStyles, PluginBag } from "@paperbits/common/styles";
 import { BoxStylePluginConfig, TypographyStylePluginConfig, BackgroundStylePluginConfig, ShadowStylePluginConfig } from "../../contracts";
 import { TransformStylePluginConfig } from "../../plugins/transform";
 import { TransitionStylePluginConfig } from "../../plugins/transition";
@@ -22,8 +22,8 @@ export class StyleEditor {
     public readonly selectedState: ko.Observable<string>;
     public readonly elementStyleTypography: ko.Observable<TypographyStylePluginConfig>;
     public readonly elementStyleBackground: ko.Observable<BackgroundStylePluginConfig>;
-    public readonly elementStyleShadow: ko.Observable<any>;
-    public readonly elementStyleAnimation: ko.Observable<any>;
+    public readonly elementStyleShadow: ko.Observable<ShadowStylePluginConfig>;
+    public readonly elementStyleAnimation: ko.Observable<AnimationStylePluginConfig>;
     public readonly elementStyleBox: ko.Observable<BoxStylePluginConfig>;
     public readonly elementStyleTransform: ko.Observable<TransformStylePluginConfig>;
     public readonly elementStyleTransition: ko.Observable<TransitionStylePluginConfig>;
@@ -47,18 +47,18 @@ export class StyleEditor {
     }
 
     @Param()
-    public elementStyle: any; // ko.Observable<any>;
+    public elementStyle: StyleContract;
 
     @Event()
     public onUpdate: (contract: any) => void;
 
     @OnMounted()
     public initialize(): void {
-        this.styleName(this.elementStyle["displayName"]);
+        this.styleName(this.elementStyle.displayName);
         this.allowBlockStyles(!this.elementStyle.key.startsWith("globals/body"));
         this.resetEditors(this.elementStyle);
 
-        const states: [] = this.elementStyle["allowedStates"];
+        const states = this.elementStyle.allowedStates;
         this.elementStates(states);
 
         if (states && states.length > 0) {
@@ -73,7 +73,7 @@ export class StyleEditor {
         this.updateTimeout = setTimeout(() => this.onUpdate(this.elementStyle), 500);
     }
 
-    public resetEditors(style: StyleContract): void {
+    public resetEditors(style: PluginBag): void {
         this.working(true);
         this.elementStyleTypography(style.typography);
         this.elementStyleTransform(style.transform);
@@ -81,7 +81,7 @@ export class StyleEditor {
         this.elementStyleBackground(style.background);
         this.elementStyleShadow(style.shadow);
         this.elementStyleAnimation(style.animation);
-        this.elementStyleBox(style);
+        this.elementStyleBox(<BoxStylePluginConfig>style);
         this.working(false);
     }
 

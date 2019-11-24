@@ -221,6 +221,7 @@ export class StyleGuide {
     private async onUpdateStyle(componentName: string): Promise<void> {
         const components = this.uiComponents();
         const old = components.find(c => c.name === componentName);
+        
         if (old) {
             const updated = await this.getComponentsStyles();
             const updatedItem = updated.find(c => c.name === componentName);

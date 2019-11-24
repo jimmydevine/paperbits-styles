@@ -5,13 +5,12 @@ import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorat
 import { StyleSnippetService } from "../../styleSnippetService";
 import { StyleItem } from "../../models/styleItem";
 import { DefaultStyleCompiler } from "../../defaultStyleCompiler";
-import { IPermalinkResolver } from "@paperbits/common/permalinks/IPermalinkResolver";
+import { IPermalinkResolver } from "@paperbits/common/permalinks";
 import { ThemeContract } from "../../contracts/themeContract";
 import { identifier } from "@paperbits/common/utils";
 import { getObjectAt } from "@paperbits/common/objects";
 import { IStyleGroup } from "@paperbits/common/styles/IStyleGroup";
-import { StyleCompiler } from "@paperbits/common/styles";
-import { StyleContract } from "@paperbits/common/styles";
+import { StyleCompiler, StyleContract } from "@paperbits/common/styles";
 
 @Component({
     selector: "style-snippet-selector",
@@ -94,7 +93,9 @@ export class StyleSnippetSelector {
     private async loadThemeForItem(item: StyleContract): Promise<object> {
         const parts = item.key.split("/");
         const isComponent = parts[0] === "components";
+
         let stylesKeys = this.getAllStyleKeys(item);
+
         if (isComponent && parts[2] !== "default") {
             const defaultKey = `${parts[0]}/${parts[1]}/default`;
             const defaultItem = await this.styleSnippetService.getStyleByKey(defaultKey);
@@ -129,15 +130,20 @@ export class StyleSnippetSelector {
 
     private getAllStyleKeys(source: any): string[] {
         const result: string[] = [];
+
         if (Array.isArray(source)) {
             source.every(x => result.push(... this.getAllStyleKeys(x)));
-        } else if (typeof source === "object") {
+        }
+        else if (typeof source === "object") {
             const propertyNames = Object.keys(source);
+
             for (const propertyName of propertyNames) {
                 const propertyValue = source[propertyName];
+
                 if (propertyName.toLowerCase().endsWith("key")) {
                     result.push(propertyValue);
-                } else {
+                }
+                else {
                     if (typeof propertyValue === "object") result.push(... this.getAllStyleKeys(propertyValue));
                 }
             }
@@ -163,6 +169,7 @@ export class StyleSnippetSelector {
             selectedItem.stylesConfig = source;
             const allKeys = this.getAllStyleKeys(source).filter((item, index, source) => source.indexOf(item) === index);
             const refKeys = {};
+
             for (const path of allKeys) {
                 const newKey = identifier();
                 const oldValue = getObjectAt<StyleContract>(path, source);
@@ -187,16 +194,21 @@ export class StyleSnippetSelector {
     private syncStyleKeys(source: any, changeTable: object): void {
         if (Array.isArray(source)) {
             source.every(x =>  this.syncStyleKeys(x, changeTable));
-        } else if (typeof source === "object") {
+        } 
+        else if (typeof source === "object") {
             const propertyNames = Object.keys(source);
+
             for (const propertyName of propertyNames) {
                 const propertyValue = source[propertyName];
+
                 if (propertyName.toLowerCase().endsWith("key")) {                    
                     const newValue = changeTable[propertyValue];
+
                     if (newValue) {
                         source[propertyName] = newValue;
                     }
-                } else {
+                }
+                else {
                     if (typeof propertyValue === "object") {
                         this.syncStyleKeys(propertyValue, changeTable);
                     }

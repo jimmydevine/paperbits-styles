@@ -3,7 +3,6 @@ import { PaddingStylePluginConfig } from "../plugins/padding";
 import { BorderRadiusStylePluginConfig, BorderStylePluginConfig, MarginStylePluginConfig, TypographyStylePluginConfig } from "./";
 
 export interface BoxStylePluginConfig extends StylePluginConfig {
-    displayName?: string;
     padding?: PaddingStylePluginConfig;
     margin?: MarginStylePluginConfig;
     border?: BorderStylePluginConfig;
