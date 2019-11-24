@@ -2,7 +2,6 @@ import * as ko from "knockout";
 import * as _ from "lodash";
 import template from "./styleSnippetSelector.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
-import { StyleItemContract } from "../../contracts/styleItemContract";
 import { StyleSnippetService } from "../../styleSnippetService";
 import { StyleItem } from "../../models/styleItem";
 import { DefaultStyleCompiler } from "../../defaultStyleCompiler";
@@ -12,6 +11,7 @@ import { identifier } from "@paperbits/common/utils";
 import { getObjectAt } from "@paperbits/common/objects";
 import { IStyleGroup } from "@paperbits/common/styles/IStyleGroup";
 import { StyleCompiler } from "@paperbits/common/styles";
+import { StyleContract } from "@paperbits/common/styles";
 
 @Component({
     selector: "style-snippet-selector",
@@ -32,7 +32,7 @@ export class StyleSnippetSelector {
     public snippetType: string;
 
     @Event()
-    public readonly onSelect: (snippet: StyleItemContract) => void;
+    public readonly onSelect: (snippet: StyleContract) => void;
 
     constructor(
         private readonly styleSnippetService: StyleSnippetService,
@@ -65,7 +65,7 @@ export class StyleSnippetSelector {
         const loadedSnippets = [];
         
         for (const it of Object.values(snippetsByType)) {
-            const item = <StyleItemContract>it;
+            const item = <StyleContract>it;
             const subTheme = await this.loadThemeForItem(item);
             const styleItem = new StyleItem(item, subTheme, this.snippetType); 
             const compiller = this.getStyleCompiler(subTheme);
@@ -91,7 +91,7 @@ export class StyleSnippetSelector {
         }
     }
 
-    private async loadThemeForItem(item: StyleItemContract): Promise<object> {
+    private async loadThemeForItem(item: StyleContract): Promise<object> {
         const parts = item.key.split("/");
         const isComponent = parts[0] === "components";
         let stylesKeys = this.getAllStyleKeys(item);
@@ -165,7 +165,7 @@ export class StyleSnippetSelector {
             const refKeys = {};
             for (const path of allKeys) {
                 const newKey = identifier();
-                const oldValue = getObjectAt<StyleItemContract>(path, source);
+                const oldValue = getObjectAt<StyleContract>(path, source);
                 const keys = path.split("/");
                 const lastKey = keys.pop();
                 const lastObj = keys.reduce((source, key) => source[key] = source[key] || {}, source); 
@@ -177,7 +177,7 @@ export class StyleSnippetSelector {
             }
             this.syncStyleKeys(source, refKeys);
             selectedItem.key = refKeys[selectedItem.key];
-            selectedItem.itemConfig = getObjectAt<StyleItemContract>(selectedItem.key, source);
+            selectedItem.itemConfig = getObjectAt<StyleContract>(selectedItem.key, source);
             const selectedItemKeys = selectedItem.key.split("/");
             delete selectedItem.stylesConfig[selectedItemKeys[0]];
             this.onSelect(selectedItem);

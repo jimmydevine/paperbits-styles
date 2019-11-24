@@ -4,10 +4,10 @@ import * as _ from "lodash";
 import template from "./styleGuide.html";
 import { EventManager } from "@paperbits/common/events";
 import { Component, OnMounted, OnDestroyed } from "@paperbits/common/ko/decorators";
-import { IStyleGroup, Styleable } from "@paperbits/common/styles";
+import { IStyleGroup, Styleable, StyleContract } from "@paperbits/common/styles";
 import { View, ViewManager, ViewManagerMode, IHighlightConfig, IContextCommandSet } from "@paperbits/common/ui";
 import { StyleService } from "../styleService";
-import { FontContract, ColorContract, ShadowContract, LinearGradientContract, StyleItemContract } from "../contracts";
+import { FontContract, ColorContract, ShadowContract, LinearGradientContract } from "../contracts";
 import { StyleItem } from "../models/styleItem";
 import { ComponentStyle } from "../contracts/componentStyle";
 
@@ -87,7 +87,7 @@ export class StyleGuide {
         this.viewManager.openViewAsPopup(view);
     }
 
-    public async removeStyle(contract: StyleItemContract): Promise<void> {
+    public async removeStyle(contract: StyleContract): Promise<void> {
         await this.styleService.removeStyle(contract.key);
         if (contract.key.startsWith("components/")) {
             const parts = contract.key.split("/");
@@ -165,7 +165,7 @@ export class StyleGuide {
         return true;
     }
 
-    public selectStyle(style: StyleItemContract): boolean {
+    public selectStyle(style: StyleContract): boolean {
         const view: View = {
             heading: style.displayName,
             component: {

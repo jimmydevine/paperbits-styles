@@ -1,7 +1,8 @@
 import * as ko from "knockout";
-import { StyleItemContract, ThemeContract } from "../contracts";
+import { ThemeContract } from "../contracts";
+import { StyleContract } from "@paperbits/common/styles";
 
-export class StyleItem implements StyleItemContract {
+export class StyleItem implements StyleContract {
     public key: string;       
     public displayName: string;
     public category: string;
@@ -12,7 +13,7 @@ export class StyleItem implements StyleItemContract {
     public stylesContent: string; 
     public stylesType: string; 
 
-    constructor(contract: StyleItemContract, stylesConfig: ThemeContract, stylesType: string) {
+    constructor(contract: StyleContract, stylesConfig: ThemeContract, stylesType: string) {
         this.key = contract.key;
         this.displayName = contract.displayName;
         this.category = contract.category;

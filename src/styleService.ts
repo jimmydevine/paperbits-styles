@@ -3,10 +3,10 @@ import * as Utils from "@paperbits/common/utils";
 import * as Objects from "@paperbits/common/objects";
 import { IObjectStorage } from "@paperbits/common/persistence";
 import { EventManager } from "@paperbits/common/events";
-import { ThemeContract, ColorContract, ShadowContract, StyleItemContract } from "./contracts";
+import { ThemeContract, ColorContract, ShadowContract } from "./contracts";
 import { StyleItem } from "./models/styleItem";
 import { ComponentStyle } from "./contracts/componentStyle";
-import { StyleHandler } from "@paperbits/common/styles";
+import { StyleHandler, StyleContract } from "@paperbits/common/styles";
 
 
 const stylesPath = "styles";
@@ -136,7 +136,7 @@ export class StyleService {
         return variation.key;
     }
 
-    public async addTextStyleVariation(variationName: string): Promise<StyleItemContract> {
+    public async addTextStyleVariation(variationName: string): Promise<StyleContract> {
         const styles = await this.getStyles();
 
         const variation: any = {
@@ -161,7 +161,7 @@ export class StyleService {
         await this.updateStyles(_.merge(styles, appendStyles));
     }
 
-    public async updateStyle(style: any): Promise<void> {
+    public async updateStyle(style: StyleContract): Promise<void> {
         if (!style) {
             throw new Error("Style cannot be empty.");
         }
@@ -171,7 +171,9 @@ export class StyleService {
         }
 
         const styles = await this.getStyles();
+        
         Objects.mergeDeepAt(style.key, styles, style);
+
         await this.updateStyles(styles);
     }
 

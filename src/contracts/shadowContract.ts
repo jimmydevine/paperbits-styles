@@ -1,6 +1,6 @@
-import { StyleItemContract } from ".";
+import { StyleContract } from "@paperbits/common/styles";
 
-export interface ShadowContract extends StyleItemContract {
+export interface ShadowContract extends StyleContract {
     /**
      * Shadow offset X.
      */

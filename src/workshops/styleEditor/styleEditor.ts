@@ -1,6 +1,7 @@
 import * as ko from "knockout";
 import template from "./styleEditor.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
+import { StyleContract, LocalStyles } from "@paperbits/common/styles";
 import { BoxStylePluginConfig, TypographyStylePluginConfig, BackgroundStylePluginConfig, ShadowStylePluginConfig } from "../../contracts";
 import { TransformStylePluginConfig } from "../../plugins/transform";
 import { TransitionStylePluginConfig } from "../../plugins/transition";
@@ -72,7 +73,7 @@ export class StyleEditor {
         this.updateTimeout = setTimeout(() => this.onUpdate(this.elementStyle), 500);
     }
 
-    public resetEditors(style: any): void {
+    public resetEditors(style: LocalStyles): void {
         this.working(true);
         this.elementStyleTypography(style.typography);
         this.elementStyleTransform(style.transform);
