@@ -1,12 +1,8 @@
+import { StylePluginConfig } from "@paperbits/common/styles";
 import { PaddingStylePluginConfig } from "../plugins/padding";
-import {
-    MarginStylePluginConfig,
-    BorderStylePluginConfig,
-    BorderRadiusStylePluginConfig,
-    TypographyStylePluginConfig
-} from "./";
+import { BorderRadiusStylePluginConfig, BorderStylePluginConfig, MarginStylePluginConfig, TypographyStylePluginConfig } from "./";
 
-export interface BoxStylePluginConfig {
+export interface BoxStylePluginConfig extends StylePluginConfig {
     displayName?: string;
     padding?: PaddingStylePluginConfig;
     margin?: MarginStylePluginConfig;
