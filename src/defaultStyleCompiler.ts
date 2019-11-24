@@ -27,7 +27,7 @@ import jss from "jss";
 import preset from "jss-preset-default";
 import { GridStylePlugin } from "./plugins/grid/gridStylePlugin";
 import { GridCellStylePlugin } from "./plugins/grid/gridCellStylePlugin";
-import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule, VariationBag, StatesBag } from "@paperbits/common/styles";
+import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule, VariationsContract, StatesContract } from "@paperbits/common/styles";
 import { JssCompiler } from "./jssCompiler";
 import { ThemeContract } from "./contracts/themeContract";
 
@@ -207,7 +207,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return globalCss + " " + css;
     }
 
-    public async getVariationStyle(variationConfig: VariationBag, componentName: string, variationName: string = null): Promise<Style> {
+    public async getVariationStyle(variationConfig: VariationsContract, componentName: string, variationName: string = null): Promise<Style> {
         await this.initializePlugins();
 
         const selector = variationName ? `${componentName}-${variationName}`.replace("-default", "") : componentName;
@@ -296,7 +296,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return resultStyle;
     }
 
-    public getVariationClassNames(variations: VariationBag, componentName: string, variationName: string = null): string[] {
+    public getVariationClassNames(variations: VariationsContract, componentName: string, variationName: string = null): string[] {
         const classNames = [];
 
         if (!variationName) {
@@ -333,14 +333,14 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return classNames;
     }
 
-    public async getStateStyle(stateConfig: StatesBag, stateName: string): Promise<Style> {
+    public async getStateStyle(states: StatesContract, stateName: string): Promise<Style> {
         const stateStyle = new Style(stateName);
 
-        for (const pluginName of Object.keys(stateConfig)) {
+        for (const pluginName of Object.keys(states)) {
             const plugin = this.plugins[pluginName];
 
             if (plugin) {
-                const pluginConfig = stateConfig[pluginName];
+                const pluginConfig = states[pluginName];
 
                 const pluginRules = await plugin.configToStyleRules(pluginConfig);
                 stateStyle.rules.push(...pluginRules);
