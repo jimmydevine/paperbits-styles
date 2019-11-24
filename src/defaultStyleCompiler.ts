@@ -27,7 +27,7 @@ import jss from "jss";
 import preset from "jss-preset-default";
 import { GridStylePlugin } from "./plugins/grid/gridStylePlugin";
 import { GridCellStylePlugin } from "./plugins/grid/gridCellStylePlugin";
-import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule, VariationsContract, StatesContract, LocalStyles } from "@paperbits/common/styles";
+import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule, VariationsContract, StatesContract, LocalStyles, PluginBag } from "@paperbits/common/styles";
 import { JssCompiler } from "./jssCompiler";
 import { ThemeContract } from "./contracts/themeContract";
 
@@ -408,7 +408,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return classNames.join(" ");
     }
 
-    public async getStyleModelAsync(styleConfig: any): Promise<StyleModel> {
+    public async getStyleModelAsync(styleConfig: LocalStyles): Promise<StyleModel> {
         const classNames = [];
         let variationStyle: Style;
         let key;
@@ -416,41 +416,49 @@ export class DefaultStyleCompiler implements StyleCompiler {
         for (const category of Object.keys(styleConfig)) {
             const categoryConfig = styleConfig[category];
 
-            if (category === "instance") {
-                const instanceClassName = categoryConfig.key || Utils.randomClassName();
-                categoryConfig.key = instanceClassName;
-                key = categoryConfig.key;
-                variationStyle = await this.getVariationStyle(categoryConfig, instanceClassName);
+            if (!categoryConfig) {
+                continue;
+            }
 
-                const instanceClassNames = await this.getVariationClassNames(categoryConfig, instanceClassName);
-                instanceClassNames.forEach(x => classNames.push(x));
+            if (category === "instance") {
+                const pluginBag = <PluginBag>categoryConfig;
+                const instanceClassName = pluginBag.key || Utils.randomClassName();
+                pluginBag.key = instanceClassName;
+                key = pluginBag.key;
+
+                variationStyle = await this.getVariationStyle(pluginBag, instanceClassName);
+
+                const instanceClassNames = await this.getVariationClassNames(pluginBag, instanceClassName);
+                classNames.push(...instanceClassNames);
             }
             else {
-                if (categoryConfig) {
-                    if (this.isResponsive(categoryConfig)) {
-                        for (const breakpoint of Object.keys(categoryConfig)) {
-                            let className;
+                if (this.isResponsive(categoryConfig)) {
+                    const pluginBag = <PluginBag>categoryConfig;
 
-                            if (breakpoint === "xs") {
-                                className = await this.getClassNameByStyleKeyAsync(categoryConfig[breakpoint]);
-                            }
-                            else {
-                                className = await this.getClassNameByStyleKeyAsync(categoryConfig[breakpoint], breakpoint);
-                            }
+                    for (const breakpoint of Object.keys(pluginBag)) {
+                        let className;
 
-                            if (className) {
-                                classNames.push(className);
-                            }
+                        if (breakpoint === "xs") {
+                            className = await this.getClassNameByStyleKeyAsync(pluginBag[breakpoint]);
                         }
-                    }
-                    else {
-                        const className = await this.getClassNameByStyleKeyAsync(categoryConfig);
+                        else {
+                            className = await this.getClassNameByStyleKeyAsync(pluginBag[breakpoint], breakpoint);
+                        }
 
                         if (className) {
                             classNames.push(className);
                         }
                     }
                 }
+                else {
+                    const styleKey = <string>categoryConfig;
+                    const className = await this.getClassNameByStyleKeyAsync(styleKey);
+
+                    if (className) {
+                        classNames.push(className);
+                    }
+                }
+
             }
         }
 
