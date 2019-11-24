@@ -15,7 +15,7 @@ export class StyleService {
     constructor(
         private readonly objectStorage: IObjectStorage,
         private readonly eventManager: EventManager,
-        private readonly defaultStyles: StyleHandler[]
+        private readonly styleHandlers: StyleHandler[]
     ) { }
 
     public async getStyles(): Promise<ThemeContract> {
@@ -25,7 +25,7 @@ export class StyleService {
             throw new Error("Data doesn't contain styles.");
         }
 
-        this.defaultStyles.forEach(styleHandler => {
+        this.styleHandlers.forEach(styleHandler => {
             if (styleHandler.migrate) {
                 styleHandler.migrate(stylesObject.components[styleHandler.key]);
             }
@@ -34,7 +34,7 @@ export class StyleService {
                 return;
             }
 
-            stylesObject.components[styleHandler.key] = styleHandler.getDefaultStyle(styleHandler.key);
+            stylesObject.components[styleHandler.key] = styleHandler.getDefaultStyle();
         });
 
         return stylesObject;
@@ -55,7 +55,7 @@ export class StyleService {
             return style;
         }
 
-        const defaultStyle = this.defaultStyles
+        const defaultStyle = this.styleHandlers
             .map(handler => handler.getDefaultStyle(styleKey))
             .find(x => !!x);
 

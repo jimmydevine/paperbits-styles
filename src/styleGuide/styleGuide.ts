@@ -25,19 +25,19 @@ export class StyleGuide {
     private actives: object = {};
     private ownerDocument: Document;
 
-    public styles: ko.Observable<any>;
-    public textBlocks: ko.ObservableArray<any>;
-    public buttons: ko.ObservableArray<any>;
-    public cards: ko.ObservableArray<any>;
-    public pictures: ko.ObservableArray<any>;
-    public videoPlayers: ko.ObservableArray<any>;
-    public fonts: ko.ObservableArray<FontContract>;
-    public colors: ko.ObservableArray<ColorContract>;
-    public shadows: ko.ObservableArray<ShadowContract>;
-    public gradients: ko.ObservableArray<LinearGradientContract>;
-    public textStyles: ko.ObservableArray<any>;
-    public navBars: ko.ObservableArray<any>;
-    public uiComponents: ko.ObservableArray<ComponentStyle>;
+    public readonly styles: ko.Observable<any>;
+    public readonly textBlocks: ko.ObservableArray<any>;
+    public readonly buttons: ko.ObservableArray<any>;
+    public readonly cards: ko.ObservableArray<any>;
+    public readonly pictures: ko.ObservableArray<any>;
+    public readonly videoPlayers: ko.ObservableArray<any>;
+    public readonly fonts: ko.ObservableArray<FontContract>;
+    public readonly colors: ko.ObservableArray<ColorContract>;
+    public readonly shadows: ko.ObservableArray<ShadowContract>;
+    public readonly gradients: ko.ObservableArray<LinearGradientContract>;
+    public readonly textStyles: ko.ObservableArray<any>;
+    public readonly navBars: ko.ObservableArray<any>;
+    public readonly uiComponents: ko.ObservableArray<ComponentStyle>;
 
     constructor(
         private readonly styleService: StyleService,
