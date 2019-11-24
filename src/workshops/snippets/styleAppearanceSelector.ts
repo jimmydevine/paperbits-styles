@@ -26,7 +26,7 @@ export class StyleAppearanceSelector {
     public snippetType: string;
 
     @Event()
-    public readonly onSelect: (snippet: StyleContract) => void;
+    public readonly onSelect: (snippet: StyleItem) => void;
 
     constructor(
         private readonly styleService: StyleService,

@@ -77,10 +77,10 @@ export class StyleEditor {
         this.working(true);
         this.elementStyleTypography(style.typography);
         this.elementStyleTransform(style.transform);
-        this.elementStyleTransition(style.transition);
+        this.elementStyleTransition(<TransitionStylePluginConfig>style.transition);
         this.elementStyleBackground(style.background);
-        this.elementStyleShadow(style.shadow);
-        this.elementStyleAnimation(style.animation);
+        this.elementStyleShadow(<ShadowStylePluginConfig>style.shadow);
+        this.elementStyleAnimation(<AnimationStylePluginConfig>style.animation);
         this.elementStyleBox(<BoxStylePluginConfig>style);
         this.working(false);
     }

@@ -369,7 +369,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return Utils.camelCaseToKebabCase(colorKey.replaceAll("/", "-"));
     }
 
-    public async getClassNamesByStyleConfigAsync(styleConfig: LocalStyles): Promise<string> {
+    public async getClassNamesForLocalStylesAsync(styleConfig: LocalStyles): Promise<string> {
         const classNames = [];
 
         for (const category of Object.keys(styleConfig)) {
