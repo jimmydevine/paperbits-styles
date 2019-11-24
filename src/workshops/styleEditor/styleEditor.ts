@@ -73,7 +73,7 @@ export class StyleEditor {
         this.updateTimeout = setTimeout(() => this.onUpdate(this.elementStyle), 500);
     }
 
-    public resetEditors(style: LocalStyles): void {
+    public resetEditors(style: StyleContract): void {
         this.working(true);
         this.elementStyleTypography(style.typography);
         this.elementStyleTransform(style.transform);

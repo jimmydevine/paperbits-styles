@@ -27,7 +27,7 @@ import jss from "jss";
 import preset from "jss-preset-default";
 import { GridStylePlugin } from "./plugins/grid/gridStylePlugin";
 import { GridCellStylePlugin } from "./plugins/grid/gridCellStylePlugin";
-import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule } from "@paperbits/common/styles";
+import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule, VariationBag, StatesBag } from "@paperbits/common/styles";
 import { JssCompiler } from "./jssCompiler";
 import { ThemeContract } from "./contracts/themeContract";
 
@@ -44,7 +44,7 @@ jss.setup(opts);
 
 export class DefaultStyleCompiler implements StyleCompiler {
     private styles: ThemeContract;
-    public plugins: Bag<StylePlugin>;
+    public readonly plugins: Bag<StylePlugin>;
 
     constructor(
         private readonly styleService: StyleService,
@@ -58,7 +58,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
             throw new Error(`Parameter "variation" not specified.`);
         }
 
-        return Object.keys(variation).some(x => Object.keys(BreakpointValues).includes(x));
+        return Object.keys(variation).some(props => Object.keys(BreakpointValues).includes(props));
     }
 
     public setStyles(styles: ThemeContract): void {
@@ -73,17 +73,20 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return result;
     }
 
-    private pluginsToRefresh = ["border", "background", "shadow", "animation", "typography"];
+    private pluginsToRefresh: string[] = ["border", "background", "shadow", "animation", "typography"];
 
     private async initializePlugins(): Promise<void> {
         const themeContract = await this.getStyles();
+
         if (Object.keys(this.plugins).length > 0) {
             if (themeContract) {
                 this.pluginsToRefresh.map(pluginName => {
                     const plugin = this.plugins[pluginName];
+
                     if (plugin.setThemeContract) {
                         plugin.setThemeContract(themeContract);
-                    } else {
+                    } 
+                    else {
                         console.error(`Plugin ${pluginName} does not support setThemeContract`);
                     }
                 });
@@ -204,7 +207,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return globalCss + " " + css;
     }
 
-    public async getVariationStyle(variationConfig: any, componentName: string, variationName: string = null): Promise<Style> {
+    public async getVariationStyle(variationConfig: VariationBag, componentName: string, variationName: string = null): Promise<Style> {
         await this.initializePlugins();
 
         const selector = variationName ? `${componentName}-${variationName}`.replace("-default", "") : componentName;
@@ -293,15 +296,15 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return resultStyle;
     }
 
-    public getVariationClassNames(variationConfig: any, componentName: string, variationName: string = null): string[] {
+    public getVariationClassNames(variations: VariationBag, componentName: string, variationName: string = null): string[] {
         const classNames = [];
 
         if (!variationName) {
             variationName = "default";
         }
 
-        for (const pluginName of Object.keys(variationConfig)) {
-            const pluginConfig = variationConfig[pluginName];
+        for (const pluginName of Object.keys(variations)) {
+            const pluginConfig = variations[pluginName];
 
             if (this.isResponsive(pluginConfig)) {
                 for (const breakpoint of Object.keys(BreakpointValues)) {
@@ -330,7 +333,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return classNames;
     }
 
-    public async getStateStyle(stateConfig: { [x: string]: any; }, stateName: string): Promise<Style> {
+    public async getStateStyle(stateConfig: StatesBag, stateName: string): Promise<Style> {
         const stateStyle = new Style(stateName);
 
         for (const pluginName of Object.keys(stateConfig)) {
