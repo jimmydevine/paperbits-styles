@@ -50,7 +50,7 @@ export class BoxEditor {
 
     constructor() {
         this.box = ko.observable();
-         this.features = "margin,padding,border";
+        this.features = "margin,padding,border";
         // this.features = "padding,border";
 
         this.marginEnabled = ko.observable();
