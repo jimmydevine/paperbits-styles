@@ -61,10 +61,11 @@ export class Background {
 
         this.position.subscribe(this.applyChanges);
         this.size.subscribe(this.applyChanges);
+        this.background.subscribe(this.fillout);
     }
 
     private getBackgroundStylePlugin(themeContract: ThemeContract): BackgroundStylePlugin {
-        if(!this.backgroundStylePlugin) {
+        if (!this.backgroundStylePlugin) {
             this.backgroundStylePlugin = new BackgroundStylePlugin(themeContract, this.mediaPermalinkResolver);
         }
         return this.backgroundStylePlugin;
