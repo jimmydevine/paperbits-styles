@@ -24,6 +24,13 @@ export class PageStyleManager {
         this.cssStyleSheet.insertRule(css, index);
 
         const rule = this.cssStyleSheet.rules[index];
-        rule["id"] = styleModel.key;
+        rule["key"] = styleModel.key;
+    }
+
+    public removeLocalStyle(key: string): void {
+        const rules: CSSRule[] = Array.prototype.slice.call(this.cssStyleSheet.rules);
+        const ruleIndex = rules.findIndex(x => x["key"] === key);
+
+        this.cssStyleSheet.removeRule(ruleIndex);
     }
 }
