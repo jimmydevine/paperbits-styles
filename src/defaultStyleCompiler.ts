@@ -180,7 +180,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
             for (const colorName of Object.keys(themeContract.colors)) {
                 const colorStyleSelector = `colors-${Utils.camelCaseToKebabCase(colorName)}`;
                 const colorStyle = new Style(colorStyleSelector);
-                colorStyle.rules.push(new StyleRule("color", themeContract.colors[colorName].value));
+                colorStyle.addRule(new StyleRule("color", themeContract.colors[colorName].value));
                 allStyles.styles.push(colorStyle);
             }
         }
@@ -219,7 +219,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
 
             if (!this.isResponsive(pluginConfig)) {
                 const rules = await plugin.configToStyleRules(pluginConfig);
-                resultStyle.rules.push(...rules);
+                resultStyle.addRules(rules);
 
                 const pseudoStyles = await plugin.configToPseudoStyles(pluginConfig);
                 resultStyle.pseudoStyles.push(...pseudoStyles);
@@ -240,7 +240,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
 
                 if (breakpoint === "xs") { // No need media query
                     const pluginRules = await plugin.configToStyleRules(breakpointConfig);
-                    resultStyle.rules.push(...pluginRules);
+                    resultStyle.addRules(pluginRules);
 
                     const pseudoStyles = await plugin.configToPseudoStyles(breakpointConfig);
                     resultStyle.pseudoStyles.push(...pseudoStyles);
@@ -328,7 +328,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
                 const pluginConfig = states[pluginName];
 
                 const pluginRules = await plugin.configToStyleRules(pluginConfig);
-                stateStyle.rules.push(...pluginRules);
+                stateStyle.addRules(pluginRules);
 
                 const nestedStyles = await plugin.configToNestedStyles(pluginConfig);
                 stateStyle.nestedStyles.push(...nestedStyles);

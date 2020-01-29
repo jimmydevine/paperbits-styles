@@ -15,15 +15,15 @@ jss.setup(opts);
 
 export class JssCompiler {
 
-    private getRulesJssString(style: Style): string {
-        const rules = style.rules.map(rule => rule.toJssString()).filter(x => !!x).join(",");
-        const modifierStyles = style.modifierStyles.map(s => `"&.${s.selector}": ${s.getRulesJssString()}`).filter(x => !!x).join(",");
-        const pseudoStyles = style.pseudoStyles.map(s => `"&:${s.selector}": ${s.getRulesJssString()}`).filter(x => !!x).join(",");
-        const nestedStyles = style.nestedStyles.map(s => `"& .${s.selector}": ${s.getRulesJssString()}`).filter(x => !!x).join(",");
-        const jssString = `{ ${[rules, modifierStyles, pseudoStyles, nestedStyles /*, nestedMediaQueries*/].filter(x => !!x).join(",")} }`;
+    // private getRulesJssString(style: Style): string {
+    //     const rules = style.rules.map(rule => rule.toJssString()).filter(x => !!x).join(",");
+    //     const modifierStyles = style.modifierStyles.map(s => `"&.${s.selector}": ${s.getRulesJssString()}`).filter(x => !!x).join(",");
+    //     const pseudoStyles = style.pseudoStyles.map(s => `"&:${s.selector}": ${s.getRulesJssString()}`).filter(x => !!x).join(",");
+    //     const nestedStyles = style.nestedStyles.map(s => `"& .${s.selector}": ${s.getRulesJssString()}`).filter(x => !!x).join(",");
+    //     const jssString = `{ ${[rules, modifierStyles, pseudoStyles, nestedStyles /*, nestedMediaQueries*/].filter(x => !!x).join(",")} }`;
 
-        return jssString;
-    }
+    //     return jssString;
+    // }
 
     private flattenMediaQueries(styles: Style[]): StyleMediaQuery[] {
         const nestedMediaQueries = styles.map(x => x.nestedMediaQueries);
