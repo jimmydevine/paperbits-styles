@@ -23,23 +23,11 @@ import {
     PaddingStylePlugin,
     TransformStylePlugin
 } from "./plugins";
-import jss from "jss";
-import preset from "jss-preset-default";
 import { GridStylePlugin } from "./plugins/grid/gridStylePlugin";
 import { GridCellStylePlugin } from "./plugins/grid/gridCellStylePlugin";
 import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule, VariationsContract, StatesContract, LocalStyles, PluginBag } from "@paperbits/common/styles";
 import { JssCompiler } from "./jssCompiler";
 import { ThemeContract } from "./contracts/themeContract";
-
-const opts = preset();
-
-opts.createGenerateId = () => {
-    return (rule, sheet) => {
-        return Utils.camelCaseToKebabCase(rule.key);
-    };
-};
-
-jss.setup(opts);
 
 
 export class DefaultStyleCompiler implements StyleCompiler {
@@ -199,10 +187,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
 
         const compiler = new JssCompiler();
         const css = compiler.styleSheetToCss(allStyles);
-
-        const globalJssObject = JSON.parse(globalStyles.toJssString());
-        const globalStyleSheet = jss.createStyleSheet({ "@global": globalJssObject });
-        const globalCss = globalStyleSheet.toString();
+        const globalCss = compiler.styleSheetToGlobalCss(globalStyles);
 
         return globalCss + " " + css;
     }
@@ -361,8 +346,10 @@ export class DefaultStyleCompiler implements StyleCompiler {
         const styleSheet = new StyleSheet();
         styleSheet.fontFaces.push(...fontFaces);
 
-        const jssObject = JSON.parse(styleSheet.toJssString());
-        return jss.createStyleSheet(jssObject).toString();
+        const compiler = new JssCompiler();
+        const css = compiler.styleSheetToCss(styleSheet);
+
+        return css;
     }
 
     public getClassNameByColorKey(colorKey: string): string {

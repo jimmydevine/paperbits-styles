@@ -49,6 +49,14 @@ export class JssCompiler {
 
     }
 
+    public styleSheetToGlobalCss(globalStyles: StyleSheet): string {
+        const globalJssObject = JSON.parse(globalStyles.toJssString());
+        const globalStyleSheet = jss.createStyleSheet({ "@global": globalJssObject });
+        const globalCss = globalStyleSheet.toString();
+
+        return globalCss;
+    }
+
     public styleSheetToCss(styleSheet: StyleSheet): string {
         const fontFacesJssString = `"@font-face":[${styleSheet.fontFaces.map(x => x.toJssString()).join(",")}]`;
         const stylesJssString = styleSheet.styles.map(style => style.toJssString()).filter(x => !!x).join(",");
