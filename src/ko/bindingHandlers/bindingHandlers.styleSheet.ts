@@ -10,12 +10,6 @@ export class StylesheetBindingHandler {
         private readonly eventManager: EventManager
     ) {
         ko.bindingHandlers["styleSheet"] = {
-            // init: (element: HTMLStyleElement, valueAccessor) => {
-            //     ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
-            //         // 
-            //     });
-            // },
-
             init: (element: HTMLStyleElement, valueAccessor) => {
                 const applyStyles = async () => {
                     const newStyles = await this.styleCompiler.compileCss();
@@ -24,22 +18,25 @@ export class StylesheetBindingHandler {
                 };
 
                 const applyLocalStyles = (styleModel: StyleModel) => {
-                    const cssStyleSheet = <CSSStyleSheet>element.sheet;
+                    const textNode = document.createTextNode(styleModel.css);
+                    textNode["key"] = styleModel.key;
+                    element.appendChild(textNode);
+                };
 
-                    const css = styleModel.css;
-                    const index = cssStyleSheet.rules.length;
-                    cssStyleSheet.insertRule(css, index);
+                const removeLocalStyles = (styleModel: StyleModel) => {
+                    const nodes = Array.prototype.slice.call(element.childNodes);
+                    const node = nodes.find(x => x["key"] === styleModel.key);
 
-                    console.log(css);
-
-                    const rule = cssStyleSheet.rules[index];
-                    rule["key"] = styleModel.key;
-                }
+                    if (node) {
+                        element.removeChild(node);
+                    }
+                };
 
                 applyStyles();
 
                 this.eventManager.addEventListener("onStyleChange", applyStyles);
                 this.eventManager.addEventListener("onLocalStyleChange", applyLocalStyles);
+                this.eventManager.addEventListener("onLocalStyleRemove", removeLocalStyles);
 
                 ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
                     // 

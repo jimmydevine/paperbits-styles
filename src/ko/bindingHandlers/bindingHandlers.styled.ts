@@ -35,6 +35,10 @@ export class StyledBindingHandler {
                 ko.applyBindingsToNode(element, { css: cssObservable }, null);
 
                 this.eventManager.dispatchEvent("onLocalStyleChange", styleModel);
+
+                ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
+                    this.eventManager.dispatchEvent("onLocalStyleRemove", styleModel);
+                });
             }
         };
     }
