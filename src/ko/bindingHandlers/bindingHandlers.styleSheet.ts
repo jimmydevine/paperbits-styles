@@ -18,7 +18,7 @@ export class StylesheetBindingHandler {
                     const styleSheet = this.styleManager.getStyleSheet(key);
                     const css = compiler.styleSheetToCss(styleSheet);
                     const nodes = Array.prototype.slice.call(element.childNodes);
-                    
+
                     let stylesTextNode = nodes.find(x => x["key"] === key);
 
                     if (!stylesTextNode) {
@@ -30,7 +30,7 @@ export class StylesheetBindingHandler {
                     stylesTextNode.textContent = css;
                 };
 
-                const removeStyle = (key: string) => {
+                const removeStyleSheet = (key: string) => {
                     if (!key) {
                         return;
                     }
@@ -44,7 +44,7 @@ export class StylesheetBindingHandler {
                 };
 
                 this.eventManager.addEventListener("onStyleChange", applyStyleSheet);
-                this.eventManager.addEventListener("onStyleRemove", removeStyle);
+                this.eventManager.addEventListener("onStyleRemove", removeStyleSheet);
             }
         };
     }
