@@ -1,8 +1,6 @@
 import { Bag } from "@paperbits/common";
 import { StyleSheet } from "@paperbits/common/styles";
 import { EventManager } from "@paperbits/common/events";
-import { JssCompiler } from "./jssCompiler";
-
 
 
 export class StyleManager {

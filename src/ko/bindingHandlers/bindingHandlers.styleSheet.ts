@@ -14,29 +14,20 @@ export class StylesheetBindingHandler {
 
         ko.bindingHandlers["styleSheet"] = {
             init: (element: HTMLStyleElement) => {
-                const globalStylesTextNode = document.createTextNode("");
-                element.appendChild(globalStylesTextNode);
-
-                const applyGlobalStyles = async () => {
-                    const globalStyleSheet = this.styleManager.getStyleSheet("global");
-                    const globalCss = compiler.styleSheetToCss(globalStyleSheet);
-                    globalStylesTextNode.textContent = globalCss;
-                };
-
-                const applyStyle = (key: string) => {
+                const applyStyleSheet = (key: string): void => {
                     const styleSheet = this.styleManager.getStyleSheet(key);
                     const css = compiler.styleSheetToCss(styleSheet);
-
                     const nodes = Array.prototype.slice.call(element.childNodes);
-                    const node = nodes.find(x => x["key"] === key);
+                    
+                    let stylesTextNode = nodes.find(x => x["key"] === key);
 
-                    if (!node) {
-                        const stylesTextNode = document.createTextNode(css);
+                    if (!stylesTextNode) {
+                        stylesTextNode = document.createTextNode(css);
                         stylesTextNode["key"] = styleSheet.key;
                         element.appendChild(stylesTextNode);
                     }
 
-                    node.textContent = css;
+                    stylesTextNode.textContent = css;
                 };
 
                 const removeStyle = (key: string) => {
@@ -52,9 +43,7 @@ export class StylesheetBindingHandler {
                     }
                 };
 
-                applyGlobalStyles();
-
-                this.eventManager.addEventListener("onStyleChange", applyStyle);
+                this.eventManager.addEventListener("onStyleChange", applyStyleSheet);
                 this.eventManager.addEventListener("onStyleRemove", removeStyle);
             }
         };
