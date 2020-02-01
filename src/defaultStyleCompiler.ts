@@ -109,12 +109,11 @@ export class DefaultStyleCompiler implements StyleCompiler {
 
         const themeContract = await this.getStyles();
 
-        const globalStyles = new StyleSheet();
         const allStyles = new StyleSheet();
 
         const fontsPlugin = new FontsStylePlugin(this.mediaPermalinkResolver, themeContract);
         const fontFaces = await fontsPlugin.contractToFontFaces();
-        globalStyles.fontFaces.push(...fontFaces);
+        allStyles.fontFaces.push(...fontFaces);
 
         if (themeContract.components) {
             for (const componentName of Object.keys(themeContract.components)) {
@@ -172,7 +171,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
                     }
                 }
 
-                globalStyles.styles.push(defaultComponentStyle);
+                allStyles.globalStyles.push(defaultComponentStyle);
             }
         }
 
@@ -187,9 +186,8 @@ export class DefaultStyleCompiler implements StyleCompiler {
 
         const compiler = new JssCompiler();
         const css = compiler.styleSheetToCss(allStyles);
-        const globalCss = compiler.styleSheetToGlobalCss(globalStyles);
 
-        return globalCss + " " + css;
+        return css;
     }
 
     public async getVariationStyle(variationConfig: VariationsContract, componentName: string, variationName: string = null): Promise<Style> {

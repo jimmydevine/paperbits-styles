@@ -4,7 +4,10 @@ import { EventManager } from "@paperbits/common/events";
 
 
 export class StyledBindingHandler {
-    constructor(private readonly eventManager: EventManager) {
+    constructor(
+        private readonly eventManager: EventManager,
+        // private readonly pageS
+    ) {
         ko.bindingHandlers["styled"] = {
             update: async (element: HTMLElement, valueAccessor) => {
                 const styleModel: StyleModel = ko.unwrap(valueAccessor());

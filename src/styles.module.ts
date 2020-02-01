@@ -10,6 +10,7 @@ import "./ko/bindingHandlers/bindingHandlers.styled";
 import { IInjectorModule, IInjector } from "@paperbits/common/injection";
 import { StyleService, DefaultStyleCompiler } from "./";
 import { StylePublisher } from "./publishing/stylePublisher";
+import { StyleManager } from "./styleManager";
 
 
 export class StyleModule implements IInjectorModule {
@@ -17,5 +18,6 @@ export class StyleModule implements IInjectorModule {
         injector.bindSingleton("styleService", StyleService);
         injector.bindToCollection("publishers", StylePublisher);
         injector.bindSingleton("styleCompiler", DefaultStyleCompiler);
+        injector.bindSingleton("styleManager", StyleManager);
     }
 }
