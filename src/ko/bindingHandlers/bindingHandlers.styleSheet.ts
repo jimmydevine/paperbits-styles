@@ -1,48 +1,62 @@
 import * as ko from "knockout";
 import { EventManager } from "@paperbits/common/events";
-import { StyleCompiler, StyleModel } from "@paperbits/common/styles";
+import { StyleManager } from "../../styleManager";
+import { JssCompiler } from "../../jssCompiler";
 
 
 // @BindingHandlers("stylesheet")
 export class StylesheetBindingHandler {
     constructor(
-        private readonly styleCompiler: StyleCompiler,
+        private readonly styleManager: StyleManager,
         private readonly eventManager: EventManager
     ) {
+        const compiler = new JssCompiler();
+
         ko.bindingHandlers["styleSheet"] = {
-            init: (element: HTMLStyleElement, valueAccessor) => {
-                const applyStyles = async () => {
-                    const newStyles = await this.styleCompiler.compileCss();
-                    const styleElement = <HTMLStyleElement>element;
-                    styleElement.innerHTML = newStyles;
+            init: (element: HTMLStyleElement) => {
+                const globalStylesTextNode = document.createTextNode("");
+                element.appendChild(globalStylesTextNode);
+
+                const applyGlobalStyles = async () => {
+                    const globalStyleSheet = this.styleManager.getStyleSheet("global");
+                    const globalCss = compiler.styleSheetToCss(globalStyleSheet);
+                    globalStylesTextNode.textContent = globalCss;
                 };
 
-                const applyLocalStyles = (styleModel: StyleModel) => {
-                    const textNode = document.createTextNode(styleModel.css);
-                    textNode["key"] = styleModel.key;
-                    element.appendChild(textNode);
-                };
+                const applyStyle = (key: string) => {
+                    const styleSheet = this.styleManager.getStyleSheet(key);
+                    const css = compiler.styleSheetToCss(styleSheet);
 
-                const removeLocalStyles = (styleModel: StyleModel) => {
                     const nodes = Array.prototype.slice.call(element.childNodes);
-                    const node = nodes.find(x => x["key"] === styleModel.key);
+                    const node = nodes.find(x => x["key"] === key);
+
+                    if (!node) {
+                        const stylesTextNode = document.createTextNode(css);
+                        stylesTextNode["key"] = styleSheet.key;
+                        element.appendChild(stylesTextNode);
+                    }
+
+                    node.textContent = css;
+                };
+
+                const removeStyle = (key: string) => {
+                    if (!key) {
+                        return;
+                    }
+
+                    const nodes = Array.prototype.slice.call(element.childNodes);
+                    const node = nodes.find(x => x["key"] === key);
 
                     if (node) {
                         element.removeChild(node);
                     }
                 };
 
-                applyStyles();
+                applyGlobalStyles();
 
-                this.eventManager.addEventListener("onStyleChange", applyStyles);
-                this.eventManager.addEventListener("onLocalStyleChange", applyLocalStyles);
-                this.eventManager.addEventListener("onLocalStyleRemove", removeLocalStyles);
-
-                ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
-                    // 
-                });
+                this.eventManager.addEventListener("onStyleChange", applyStyle);
+                this.eventManager.addEventListener("onStyleRemove", removeStyle);
             }
         };
     }
 }
-

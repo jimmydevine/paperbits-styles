@@ -101,19 +101,14 @@ export class DefaultStyleCompiler implements StyleCompiler {
         this.plugins["stickTo"] = new StickToStylePlugin();
     }
 
-    /**
-     * Returns compliled CSS.
-     */
-    public async compileCss(): Promise<string> {
+    public async getStyleSheet(): Promise<StyleSheet> {
         await this.initializePlugins();
 
+        const styleSheet = new StyleSheet("global");
         const themeContract = await this.getStyles();
-
-        const allStyles = new StyleSheet();
-
         const fontsPlugin = new FontsStylePlugin(this.mediaPermalinkResolver, themeContract);
         const fontFaces = await fontsPlugin.contractToFontFaces();
-        allStyles.fontFaces.push(...fontFaces);
+        styleSheet.fontFaces.push(...fontFaces);
 
         if (themeContract.components) {
             for (const componentName of Object.keys(themeContract.components)) {
@@ -131,19 +126,19 @@ export class DefaultStyleCompiler implements StyleCompiler {
                     componentStyle.modifierStyles.push(variationStyle);
                 }
 
-                allStyles.styles.push(componentStyle);
+                styleSheet.styles.push(componentStyle);
             }
         }
 
         if (themeContract.utils) {
             for (const variationName of Object.keys(themeContract.utils.text)) {
                 const textStyle = await this.getVariationStyle(themeContract.utils.text[variationName], "text", variationName);
-                allStyles.styles.push(textStyle);
+                styleSheet.styles.push(textStyle);
             }
 
             for (const variationName of Object.keys(themeContract.utils.content)) {
                 const contentStyle = await this.getVariationStyle(themeContract.utils.content[variationName], "content", variationName);
-                allStyles.styles.push(contentStyle);
+                styleSheet.styles.push(contentStyle);
             }
         }
 
@@ -171,7 +166,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
                     }
                 }
 
-                allStyles.globalStyles.push(defaultComponentStyle);
+                styleSheet.globalStyles.push(defaultComponentStyle);
             }
         }
 
@@ -180,12 +175,20 @@ export class DefaultStyleCompiler implements StyleCompiler {
                 const colorStyleSelector = `colors-${Utils.camelCaseToKebabCase(colorName)}`;
                 const colorStyle = new Style(colorStyleSelector);
                 colorStyle.addRule(new StyleRule("color", themeContract.colors[colorName].value));
-                allStyles.styles.push(colorStyle);
+                styleSheet.styles.push(colorStyle);
             }
         }
 
+        return styleSheet;
+    }
+
+    /**
+     * Returns compliled CSS.
+     */
+    public async compileCss(): Promise<string> {
+        const styleSheet = await this.getStyleSheet();
         const compiler = new JssCompiler();
-        const css = compiler.styleSheetToCss(allStyles);
+        const css = compiler.styleSheetToCss(styleSheet);
 
         return css;
     }
@@ -393,13 +396,13 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return classNames.join(" ");
     }
 
-    public async getStyleModelAsync(styleConfig: LocalStyles): Promise<StyleModel> {
+    public async getStyleModelAsync(localStyles: LocalStyles): Promise<StyleModel> {
         const classNames = [];
         let variationStyle: Style;
         let key;
 
-        for (const category of Object.keys(styleConfig)) {
-            const categoryConfig = styleConfig[category];
+        for (const category of Object.keys(localStyles)) {
+            const categoryConfig = localStyles[category];
 
             if (!categoryConfig) {
                 continue;
@@ -447,10 +450,17 @@ export class DefaultStyleCompiler implements StyleCompiler {
             }
         }
 
+        const localStyleSheet = new StyleSheet(key);
+
+        if (variationStyle) {
+            localStyleSheet.styles.push(variationStyle);
+        }
+
         const result: StyleModel = {
             key: key,
             classNames: classNames.join(" "),
-            css: await this.styleToCss(variationStyle)
+            css: await this.styleToCss(variationStyle),
+            styleSheet: localStyleSheet
         };
 
         return result;
