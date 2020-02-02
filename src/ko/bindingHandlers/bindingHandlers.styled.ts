@@ -12,12 +12,12 @@ export class StyledBindingHandler {
                     return;
                 }
 
-                styleModel.bindingContext.styleManager.setStyleSheet(styleModel.styleSheet);
+                styleModel.styleManager.setStyleSheet(styleModel.styleSheet);
 
                 ko.applyBindingsToNode(element, { css: styleModel.classNames }, null);
 
                 ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
-                    styleModel.bindingContext.styleManager.removeStyleSheet(styleModel.key);
+                    styleModel.styleManager.removeStyleSheet(styleModel.key);
                 });
             }
         };

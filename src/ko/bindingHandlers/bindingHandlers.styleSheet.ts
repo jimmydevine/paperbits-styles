@@ -6,9 +6,7 @@ import { StyleSheet } from "@paperbits/common/styles";
 
 // @BindingHandlers("stylesheet")
 export class StylesheetBindingHandler {
-    constructor(
-        private readonly eventManager: EventManager
-    ) {
+    constructor(private readonly eventManager: EventManager) {
         const compiler = new JssCompiler();
 
         ko.bindingHandlers["styleSheet"] = {

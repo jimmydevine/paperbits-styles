@@ -25,7 +25,19 @@ import {
 } from "./plugins";
 import { GridStylePlugin } from "./plugins/grid/gridStylePlugin";
 import { GridCellStylePlugin } from "./plugins/grid/gridCellStylePlugin";
-import { Style, StyleSheet, StyleMediaQuery, StyleCompiler, StyleModel, StyleRule, VariationsContract, StatesContract, LocalStyles, PluginBag } from "@paperbits/common/styles";
+import {
+    Style,
+    StyleSheet,
+    StyleManager,
+    StyleMediaQuery,
+    StyleCompiler,
+    StyleModel,
+    StyleRule,
+    VariationsContract,
+    StatesContract,
+    LocalStyles,
+    PluginBag
+} from "@paperbits/common/styles";
 import { JssCompiler } from "./jssCompiler";
 import { ThemeContract } from "./contracts/themeContract";
 
@@ -396,7 +408,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return classNames.join(" ");
     }
 
-    public async getStyleModelAsync(localStyles: LocalStyles, bindingContext: Bag<any>): Promise<StyleModel> {
+    public async getStyleModelAsync(localStyles: LocalStyles, styleManager: StyleManager): Promise<StyleModel> {
         const classNames = [];
         let variationStyle: Style;
         let key;
@@ -460,7 +472,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
             classNames: classNames.join(" "),
             css: await this.styleToCss(variationStyle),
             styleSheet: localStyleSheet,
-            bindingContext: bindingContext
+            styleManager: styleManager
         };
 
         return result;
