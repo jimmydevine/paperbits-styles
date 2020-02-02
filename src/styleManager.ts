@@ -12,7 +12,7 @@ export class StyleManager {
 
     public setStyleSheet(styleSheet: StyleSheet): void {
         this.styleSheets[styleSheet.key] = styleSheet;
-        this.eventManager.dispatchEvent("onStyleChange", styleSheet.key);
+        this.eventManager.dispatchEvent("onStyleChange", styleSheet);
     }
 
     public getStyleSheet(key: string): StyleSheet {

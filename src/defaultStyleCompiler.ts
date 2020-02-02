@@ -396,7 +396,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return classNames.join(" ");
     }
 
-    public async getStyleModelAsync(localStyles: LocalStyles): Promise<StyleModel> {
+    public async getStyleModelAsync(localStyles: LocalStyles, bindingContext: Bag<any>): Promise<StyleModel> {
         const classNames = [];
         let variationStyle: Style;
         let key;
@@ -460,7 +460,8 @@ export class DefaultStyleCompiler implements StyleCompiler {
             key: key,
             classNames: classNames.join(" "),
             css: await this.styleToCss(variationStyle),
-            styleSheet: localStyleSheet
+            styleSheet: localStyleSheet,
+            bindingContext: bindingContext
         };
 
         return result;

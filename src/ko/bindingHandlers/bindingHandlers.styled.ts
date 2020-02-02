@@ -1,10 +1,9 @@
 import * as ko from "knockout";
 import { StyleModel } from "@paperbits/common/styles";
-import { StyleManager } from "../..";
 
 
 export class StyledBindingHandler {
-    constructor(private readonly styleManager: StyleManager) {
+    constructor() {
         ko.bindingHandlers["styled"] = {
             update: async (element: HTMLElement, valueAccessor) => {
                 const styleModel: StyleModel = ko.unwrap(valueAccessor());
@@ -13,12 +12,12 @@ export class StyledBindingHandler {
                     return;
                 }
 
-                this.styleManager.setStyleSheet(styleModel.styleSheet);
+                styleModel.bindingContext.styleManager.setStyleSheet(styleModel.styleSheet);
 
                 ko.applyBindingsToNode(element, { css: styleModel.classNames }, null);
 
                 ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
-                    this.styleManager.removeStyleSheet(styleModel.key);
+                    styleModel.bindingContext.styleManager.removeStyleSheet(styleModel.key);
                 });
             }
         };
