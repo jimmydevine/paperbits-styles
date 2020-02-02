@@ -24,7 +24,7 @@ export class StylePublisher implements IPublisher {
             const css = await this.styleCompiler.compileCss();
             const bytes = Utils.stringToUnit8Array(css);
 
-            await this.outputBlobStorage.uploadBlob(`styles/customizations.css`, bytes, "text/css");
+            await this.outputBlobStorage.uploadBlob(`styles/styles.css`, bytes, "text/css");
         }
         catch (error) {
             console.error(error);
