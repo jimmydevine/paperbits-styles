@@ -19,7 +19,15 @@ export class StyleManager {
         return this.styleSheets[key];
     }
 
+    public getAllStyleSheets(): StyleSheet[] {
+        return Object.values(this.styleSheets);
+    }
+
     public removeStyleSheet(key: string): void {
         this.eventManager.dispatchEvent("onStyleRemove", key);
+    }
+
+    public removeAllStyleSheets(): void {
+        this.styleSheets = {};
     }
 }
