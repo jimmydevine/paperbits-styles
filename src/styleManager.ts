@@ -6,13 +6,16 @@ import { EventManager } from "@paperbits/common/events";
 export class StyleManager {
     private styleSheets: Bag<StyleSheet>;
 
-    constructor(private readonly eventManager: EventManager) {
+    constructor(private readonly eventManager: EventManager = null) {
         this.styleSheets = {};
     }
 
     public setStyleSheet(styleSheet: StyleSheet): void {
         this.styleSheets[styleSheet.key] = styleSheet;
-        this.eventManager.dispatchEvent("onStyleChange", styleSheet);
+
+        if (this.eventManager) {
+            this.eventManager.dispatchEvent("onStyleChange", styleSheet);
+        }
     }
 
     public getStyleSheet(key: string): StyleSheet {
@@ -24,7 +27,9 @@ export class StyleManager {
     }
 
     public removeStyleSheet(key: string): void {
-        this.eventManager.dispatchEvent("onStyleRemove", key);
+        if (this.eventManager) {
+            this.eventManager.dispatchEvent("onStyleRemove", key);
+        }
     }
 
     public removeAllStyleSheets(): void {

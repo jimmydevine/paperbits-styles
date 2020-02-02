@@ -446,7 +446,6 @@ export class DefaultStyleCompiler implements StyleCompiler {
                         classNames.push(className);
                     }
                 }
-
             }
         }
 
