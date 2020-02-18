@@ -10,7 +10,7 @@ import { BackgroundStylePluginConfig, ColorContract, LinearGradientContract, The
 import { BackgroundStylePlugin } from "../../plugins/background/backgroundStylePlugin";
 
 
-const defaultBackgroundSize = "cover";
+const defaultBackgroundSize = "original";
 
 @Component({
     selector: "background",
@@ -166,7 +166,9 @@ export class Background {
             images.push({
                 sourceKey: this.sourceKey(),
                 position: this.position(),
-                size: this.size(),
+                size: this.size() !== defaultBackgroundSize
+                    ? this.size()
+                    : undefined,
                 repeat: this.repeat()
             });
         }
