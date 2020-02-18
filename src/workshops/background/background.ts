@@ -56,6 +56,7 @@ export class Background {
     public async initialize(): Promise<void> {
         await this.fillout();
         this.background.subscribe(this.fillout);
+        this.size.subscribe(this.applyChanges);
     }
 
     private getBackgroundStylePlugin(themeContract: ThemeContract): BackgroundStylePlugin {
