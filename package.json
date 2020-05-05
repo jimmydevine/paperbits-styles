@@ -38,6 +38,7 @@
         "@types/knockout.validation": "0.0.37",
         "@types/lodash": "^4.14.146",
         "@types/node": "12.12.6",
+        "@types/opentype.js": "^0.7.2",
         "@types/signals": "1.0.1"
     }
 }

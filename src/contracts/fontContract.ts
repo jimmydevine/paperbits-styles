@@ -1,4 +1,5 @@
 import { VariationContract, PrimitiveContract } from "@paperbits/common/styles";
+import { IconContract } from "./iconContract";
 
 export interface FontVariantContract {
     /**
@@ -52,4 +53,9 @@ export interface FontContract extends PrimitiveContract {
      * e.g. "2017-10-10".
      */
     lastModified?: string;
+
+    /**
+     * Icons, like in Font Awesome
+     */
+    icons?: IconContract[];
 }

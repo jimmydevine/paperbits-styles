@@ -1,5 +1,5 @@
 import { StylePlugin } from "./stylePlugin";
-import { ThemeContract } from "../contracts";
+import {FontContract, ThemeContract} from "../contracts";
 import { IPermalinkResolver } from "@paperbits/common/permalinks";
 import { FontFace } from "@paperbits/common/styles";
 
@@ -15,7 +15,7 @@ export class FontsStylePlugin {
     public async contractToFontFaces(): Promise<FontFace[]> {
         const fontFaces = [];
 
-        if(!this.themeContract.fonts) {
+        if (!this.themeContract.fonts) {
             return fontFaces;
         }
 

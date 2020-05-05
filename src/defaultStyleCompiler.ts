@@ -36,7 +36,7 @@ import {
     VariationsContract,
     StatesContract,
     LocalStyles,
-    PluginBag
+    PluginBag, FontFace
 } from "@paperbits/common/styles";
 import { JssCompiler } from "./jssCompiler";
 import { ThemeContract } from "./contracts/themeContract";
@@ -365,6 +365,14 @@ export class DefaultStyleCompiler implements StyleCompiler {
         const css = compiler.compile(styleSheet);
 
         return css;
+    }
+
+    public async getIconFontFaces(): Promise<FontFace[]> {
+        const themeContract = await this.getStyles();
+        const fontsPlugin = new FontsStylePlugin(this.mediaPermalinkResolver, themeContract);
+        fontsPlugin.contractToFontFaces()
+        const fontFaces: FontFace[] = [];
+        return fontFaces;
     }
 
     public getClassNameByColorKey(colorKey: string): string {

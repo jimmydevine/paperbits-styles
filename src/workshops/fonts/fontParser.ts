@@ -1,6 +1,7 @@
 import { FontContract } from "./../../contracts/fontContract";
 import * as opentype from "opentype.js";
 import * as Utils from "@paperbits/common/utils";
+import { IconContract } from "../../contracts";
 
 export class FontParser {
     public static async parse(contents): Promise<FontContract> {
@@ -8,6 +9,7 @@ export class FontParser {
         let fontFamily: string;
         let fontWeight: string;
         let fontStyle: string;
+        let fontIcons: IconContract[];
 
         try {
             const info = opentype.parse(contents);
@@ -20,6 +22,8 @@ export class FontParser {
             fontWeight = matches[1] || "400";
             fontStyle = matches[2] || "normal";
 
+            // Glyphs
+            fontIcons = this.fontGlyphsIntoIconContracts(fontFamily, info.glyphs);
         }
         catch (error) {
             fontFamily = "Font";
@@ -40,9 +44,36 @@ export class FontParser {
                 weight: fontWeight,
                 style: fontStyle.toLowerCase(),
                 sourceKey: identifier
-            }]
+            }],
+            icons: fontIcons
         };
 
         return fontContract;
+    }
+
+    private static fontGlyphsIntoIconContracts(fontFamily: string, glyphSet: opentype.GlyphSet): IconContract[] | null {
+        if (!glyphSet || glyphSet.length === 0) {
+            console.log("No glyphs found in this font.");
+            return null;
+        }
+
+        // const glyphs = glyphSet.glyphs;
+        const table: IconContract[]  = [];
+        let glyph;
+
+        for (let i = 0; i < glyphSet.length - 1; i++) {
+            glyph = glyphSet.get(i);
+            if (!glyph.unicode) {
+                continue;
+            }
+
+            table.push({
+                name: glyph.name,
+                fontFamily: fontFamily,
+                unicode: glyph.unicode
+            });
+        }
+
+        return table;
     }
 }

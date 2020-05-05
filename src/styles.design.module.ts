@@ -19,6 +19,7 @@ import { BorderEditor } from "./workshops/border";
 import { ColorSelector, ColorEditor } from "./workshops/colors";
 import { GradientSelector,  GradientEditor, ColorStopEditor } from "./workshops/gradients";
 import { FontSelector } from "./workshops/fonts";
+import { IconPicker, IconPickerView } from "./workshops/icons";
 import { GoogleFonts } from "./workshops/googleFonts";
 import { AnimationSelector } from "./workshops/animations";
 import { AnimationEditor } from "./workshops/animations/animationEditor";
@@ -46,6 +47,8 @@ export class StylesDesignModule implements IInjectorModule {
     public register(injector: IInjector): void {
         injector.bindModule(new StyleModule());
         injector.bind("fontSelector", FontSelector);
+        injector.bind("iconPicker", IconPicker);
+        injector.bind("iconPickerView", IconPickerView);
         injector.bind("googleFonts", GoogleFonts);
         injector.bind("typography", Typography);
         injector.bind("container", Container);

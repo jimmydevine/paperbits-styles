@@ -1,0 +1,12 @@
+<style data-bind="html: compiledFontStyles"></style>
+<div>
+    <h1>Icon Picker</h1>
+    <hr />
+        <!-- ko foreach: { data: icons } -->
+        <div>
+            <a href="#">
+                <i data-bind="class: 'faIcon ' + $data.icon.name"></i>
+            </a>
+        </div>
+        <!--/ko -->
+</div>
