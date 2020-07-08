@@ -4,6 +4,7 @@ import { LocalStyles } from "@paperbits/common/styles/localStyles";
 import * as Objects from "@paperbits/common/objects";
 import * as Utils from "@paperbits/common/utils";
 import { PluginBag } from "@paperbits/common/styles/pluginBagContract";
+import { Bag } from "@paperbits/common";
 
 
 export class StyleHelper {
@@ -157,5 +158,12 @@ export class StyleHelper {
         }
 
         Objects.cleanupObject(pluginBag, true, true);
+    }
+
+    public static collapse(pluginBag: PluginBag, property: string): void {
+        if (StyleHelper.isResponsive(pluginBag[property])) {
+            const result = Utils.optimizeBreakpoints(pluginBag[property]);
+            pluginBag[property] = result;
+        }
     }
 }

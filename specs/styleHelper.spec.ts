@@ -1,6 +1,8 @@
 import { expect } from "chai";
 import { StyleHelper } from "./../src/styleHelper";
-import { LocalStyles } from "@paperbits/common/styles";
+import { LocalStyles, PluginBag } from "@paperbits/common/styles";
+import { TypographyStylePluginConfig } from "../src/contracts";
+import { StyleEditor } from "../src/workshops/styleEditor";
 
 
 describe("Style helper", async () => {
@@ -59,5 +61,34 @@ describe("Style helper", async () => {
         expect(localStyles.instance.size.xs).to.equal(undefined);
         expect(localStyles.instance.background.xs).to.equal(backgroundConfigXs);
         expect(localStyles.appearance).to.equal(appearanceVariationKey);
+    });
+
+    it("Test", async () => {
+        const fontSizeXs = 15;
+        const fontSizeMd = 18;
+        const fontSizeLg = 20;
+        const fontWeight = 400;
+
+        const pluginBag: PluginBag = {
+            fontSize: {
+                xs: fontSizeXs,
+                md: fontSizeMd
+            },
+            fontWeight: 400
+        };
+
+        const typographyConfig: TypographyStylePluginConfig = {
+            fontSize: fontSizeMd,
+        };
+
+        StyleHelper.setPluginConfig(pluginBag, "size", typographyConfig, "lg"); // applying to specific viewport
+
+        // expect(pluginBag.fontSize.xs).to.equal(fontSizeXs);
+        // expect(pluginBag.fontSize.md).to.equal(fontSizeMd);
+        // expect(pluginBag.fontWeight).to.equal(400);
+
+        StyleHelper.collapse(pluginBag, "fontSize");
+
+        debugger;
     });
 });
