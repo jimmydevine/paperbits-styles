@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { StyleHelper } from "./../src/styleHelper";
-import { LocalStyles, PluginBag } from "@paperbits/common/styles";
+import { LocalStyles, PluginBag, Breakpoints } from "@paperbits/common/styles";
 import { TypographyStylePluginConfig } from "../src/contracts";
 import { StyleEditor } from "../src/workshops/styleEditor";
 
 
 describe("Style helper", async () => {
-    it("Can extracts local sstyles properly depending on requested viewport.", async () => {
+    it("Can extracts local styles properly depending on requested viewport.", async () => {
         const sizeConfigXs = 100;
 
         const localStyles: LocalStyles = {
@@ -63,9 +63,9 @@ describe("Style helper", async () => {
         expect(localStyles.appearance).to.equal(appearanceVariationKey);
     });
 
-    it("Test", async () => {
+    it("Test1", async () => {
         const fontSizeXs = 15;
-        const fontSizeMd = 18;
+        const fontSizeMd = 15;
         const fontSizeLg = 20;
         const fontWeight = 400;
 
@@ -87,8 +87,38 @@ describe("Style helper", async () => {
         // expect(pluginBag.fontSize.md).to.equal(fontSizeMd);
         // expect(pluginBag.fontWeight).to.equal(400);
 
-        StyleHelper.collapse(pluginBag, "fontSize");
+        StyleHelper.optimizeProperty(pluginBag, "fontSize");
 
         debugger;
+    });
+
+    it("Can optimize style plugin config", async () => {
+        const fontSizeXs = 15;
+        const fontSizeMd = 17;
+        const fontSizeLg = 17;
+        const fontWeightXs = 400;
+        const fontWeightLg = 600;
+
+        const config: Breakpoints<TypographyStylePluginConfig> = {
+            xs: {
+                fontWeight: fontWeightXs,
+                fontSize: fontSizeXs,
+            },
+            md: {
+                fontSize: fontSizeMd
+            },
+            lg: {
+                fontWeight: fontWeightLg,
+                fontSize: fontSizeLg
+            }
+        };
+
+        StyleHelper.optimizePluginConfig(config);
+        console.log(JSON.stringify(config));
+
+        expect(config.xs.fontSize).to.equal(fontSizeXs); // Stays as is
+        expect(config.md.fontSize).to.equal(fontSizeMd); // Stays as is
+        expect(config.lg.fontSize).to.equal(undefined); // Gets removed
+        expect(config.lg.fontWeight).to.equal(600); // Stays as is
     });
 });

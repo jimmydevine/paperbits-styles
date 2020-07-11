@@ -262,7 +262,7 @@ export class Typography {
             fontWeight: this.fontWeight(),
             fontStyle: this.fontStyle(),
             lineHeight: this.lineHeight() ? this.lineHeight() : undefined,
-            colorKey: this.colorKey(),
+            colorKey: this.colorKey() || null,
             shadowKey: this.shadowKey(),
             textAlign: this.textAlign(),
             textTransform: this.textTransform(),
