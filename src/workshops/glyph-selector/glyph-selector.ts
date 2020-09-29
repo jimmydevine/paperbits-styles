@@ -34,12 +34,12 @@ export class GlyphSelector {
     public glyphBaseline;
 
     public glyphs2: ko.ObservableArray;
+    public pages: ko.ObservableArray;
 
 
     constructor() {
-        //
-
         this.glyphs2 = ko.observableArray();
+        this.pages = ko.observableArray();
 
         this.cellSelect = this.cellSelect.bind(this);
     }
@@ -60,73 +60,14 @@ export class GlyphSelector {
         }
     }
 
-    private pathCommandToString(cmd) {
-        const str = "<strong>" + cmd.type + "</strong> " +
-            ((cmd.x !== undefined) ? "x=" + cmd.x + " y=" + cmd.y + " " : "") +
-            ((cmd.x1 !== undefined) ? "x1=" + cmd.x1 + " y1=" + cmd.y1 + " " : "") +
-            ((cmd.x2 !== undefined) ? "x2=" + cmd.x2 + " y2=" + cmd.y2 : "");
-        return str;
-    }
-
-    private contourToString(contour) {
-        return '<pre class="contour">' + contour.map(function (point) {
-            return '<span class="' + (point.onCurve ? "on" : "off") + 'curve">x=' + point.x + " y=" + point.y + "</span>";
-        }).join("\n") + "</pre>";
-    }
-
-    private formatUnicode(unicode) {
+    private formatUnicode(unicode: any): string {
         unicode = unicode.toString(16);
+
         if (unicode.length > 4) {
             return ("000000" + unicode.toUpperCase()).substr(-6);
         } else {
             return ("0000" + unicode.toUpperCase()).substr(-4);
         }
-    }
-
-    private displayGlyphData(glyphIndex): void {
-        const container = document.getElementById("glyph-data");
-        if (glyphIndex < 0) {
-            container.innerHTML = "";
-            return;
-        }
-        let glyph = this.font.glyphs.get(glyphIndex),
-            html = "<dl>";
-        html += "<dt>name</dt><dd>" + glyph.name + "</dd>";
-
-        if (glyph.unicodes.length > 0) {
-            html += "<dt>unicode</dt><dd>" + glyph.unicodes.map(this.formatUnicode).join(", ") + "</dd>";
-        }
-        html += "<dt>index</dt><dd>" + glyph.index + "</dd>";
-
-        if (glyph.xMin !== 0 || glyph.xMax !== 0 || glyph.yMin !== 0 || glyph.yMax !== 0) {
-            html += "<dt>xMin</dt><dd>" + glyph.xMin + "</dd>" +
-                "<dt>xMax</dt><dd>" + glyph.xMax + "</dd>" +
-                "<dt>yMin</dt><dd>" + glyph.yMin + "</dd>" +
-                "<dt>yMax</dt><dd>" + glyph.yMax + "</dd>";
-        }
-        html += "<dt>advanceWidth</dt><dd>" + glyph.advanceWidth + "</dd>";
-        if (glyph.leftSideBearing !== undefined) {
-            html += "<dt>leftSideBearing</dt><dd>" + glyph.leftSideBearing + "</dd>";
-        }
-        html += "</dl>";
-        if (glyph.numberOfContours > 0) {
-            const contours = glyph.getContours();
-            html += 'contours:<div id="glyph-contours">' + contours.map(this.contourToString).join("\n") + "</div>";
-        }
-        else if (glyph.isComposite) {
-            html += "<br>This composite glyph is a combination of :<ul><li>" +
-                glyph.components.map(function (component) {
-                    if (component.matchedPoints === undefined) {
-                        return "glyph " + component.glyphIndex + " at dx=" + component.dx + ", dy=" + component.dy;
-                    } else {
-                        return "glyph " + component.glyphIndex + " at matchedPoints=[" + component.matchedPoints + "]";
-                    }
-                }).join("</li><li>") + "</li></ul>";
-        } 
-        else if (glyph.path) {
-            html += "path:<br><pre>  " + glyph.path.commands.map(this.pathCommandToString).join("\n  ") + "\n</pre>";
-        }
-        container.innerHTML = html;
     }
 
     private renderGlyphItem(canvas: HTMLCanvasElement, glyphIndex): void {
@@ -157,7 +98,6 @@ export class GlyphSelector {
 
     private displayGlyphPage(pageNum: number): void {
         this.pageSelected = pageNum;
-        document.getElementById("p" + pageNum).className = "page-selected";
         const firstGlyph = pageNum * this.cellCount;
 
         for (let i = 0; i < this.cellCount; i++) {
@@ -165,11 +105,9 @@ export class GlyphSelector {
         }
     }
 
-    private pageSelect(event: any): void {
-        document.getElementsByClassName("page-selected")[0].className = "";
-        this.displayGlyphPage(+event.target.id.substr(1));
+    private pageSelect(pageNum: number): void {
+        this.displayGlyphPage(pageNum);
     }
-
 
     private onFontLoaded(font): void {
         this.font = font;
@@ -183,38 +121,28 @@ export class GlyphSelector {
         this.fontSize = this.fontScale * this.font.unitsPerEm;
         this.fontBaseline = this.cellMarginTop + h * head.yMax / maxHeight;
 
-        const pagination = document.getElementById("pagination");
-        pagination.innerHTML = "";
-        const fragment = document.createDocumentFragment();
         const numPages = Math.ceil(font.numGlyphs / this.cellCount);
 
         for (let i = 0; i < numPages; i++) {
-            const link = document.createElement("span");
-            const lastIndex = Math.min(font.numGlyphs - 1, (i + 1) * this.cellCount - 1);
-            link.textContent = i * this.cellCount + "-" + lastIndex;
-            link.id = "p" + i;
-            link.addEventListener("click", this.pageSelect.bind(this), false);
-            fragment.appendChild(link);
-            // A white space allows to break very long lines into multiple lines.
-            // This is needed for fonts with thousands of glyphs.
-            fragment.appendChild(document.createTextNode(" "));
+            this.pages.push(i);
         }
-        pagination.appendChild(fragment);
 
         this.displayGlyphPage(0);
 
         setTimeout(() => { this.displayGlyphPage(0); }, 1000);
     }
 
-    public cellSelect(glyph): void {
+    public cellSelect(glyphInfo: any): void {
         if (!this.font) {
             return;
         }
 
-        console.log(glyph);
-
         const firstGlyphIndex = this.pageSelected * this.cellCount,
-            cellIndex = glyph.index,
+            cellIndex = glyphInfo.index,
             glyphIndex = firstGlyphIndex + cellIndex;
+
+        const glyph = this.font.glyphs.get(glyphIndex);
+
+        console.log(glyph);
     }
 }
