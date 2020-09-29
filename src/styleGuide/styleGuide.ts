@@ -177,7 +177,8 @@ export class StyleGuide {
         };
 
         this.viewManager.openViewAsPopup(view);
-        return true
+        
+        return true;
     }
 
     public selectShadow(shadow: ShadowContract): boolean {

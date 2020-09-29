@@ -10,6 +10,7 @@ import "./ko/bindingHandlers/bindingHandlers.jss";
 import "./ko/bindingHandlers/bindingHandlers.shadowPreview";
 import "./ko/bindingHandlers/bindingHandlers.gradientPreview";
 import "./ko/bindingHandlers/bindingHandlers.itemTemplate";
+import "./ko/bindingHandlers/bindingHandlers.highDpiCanvas";
 import { IInjectorModule, IInjector } from "@paperbits/common/injection";
 import { StyleModule } from "./styles.module";
 import { StyleEditor } from "./workshops/styleEditor";
@@ -41,11 +42,13 @@ import { StyleVariationSelector } from "./workshops/snippets/styleVariationSelec
 import { StyledBindingHandler } from "./ko/bindingHandlers";
 import { OptionSelectorEditor } from "./workshops/optionSelector/optionSelectorEditor";
 import { SizeEditor } from "./workshops/size/sizeEditor";
+import { GlyphSelector } from "./workshops/glyph-selector/glyph-selector";
 
 export class StylesDesignModule implements IInjectorModule {
     public register(injector: IInjector): void {
         injector.bindModule(new StyleModule());
         injector.bind("fontSelector", FontSelector);
+        injector.bind("glyphSelector", GlyphSelector);
         injector.bind("googleFonts", GoogleFonts);
         injector.bind("typography", Typography);
         injector.bind("container", Container);

@@ -6,7 +6,7 @@ import { HttpClient, HttpMethod } from "@paperbits/common/http";
 import { IMediaService } from "@paperbits/common/media";
 import { ISettingsProvider } from "@paperbits/common/configuration";
 import { ISiteService } from "@paperbits/common/sites";
-import { ViewManager } from "@paperbits/common/ui";
+import { View, ViewManager } from "@paperbits/common/ui";
 import { ChangeRateLimit } from "@paperbits/common/ko/consts";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
 import { StyleService } from "../../styleService";
@@ -134,5 +134,16 @@ export class GoogleFonts {
         if (this.onSelect) {
             this.onSelect(fontContract);
         }
+    }
+
+    public openGlyphSelector(): void {
+        const view: View = {
+            heading: "Glyph",
+            component: {
+                name: "glyph-selector",
+                params: {}
+            }
+        };
+        this.viewManager.openViewAsPopup(view);
     }
 }

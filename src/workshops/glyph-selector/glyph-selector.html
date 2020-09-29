@@ -1,0 +1,20 @@
+<fieldset class="flex-item form">
+    <h1>AAA</h1>
+</fieldset>
+
+
+<div class="container">
+    <div id="message"></div>
+
+    <div>
+        Glyphs <span id="pagination"></span>
+        <br>
+        <div id="glyph-list-end"></div>
+    </div>
+    <div data-bind="foreach: { data: glyphs2, as: 'glyph2' }">
+        <a href="#" data-bind="click: $component.cellSelect">
+            <canvas width="44" height="40" class="item" style="width: 44px; height: 40px;"
+                data-bind="attr: { id: glyph2.id }, highDpiCanvas: {}"></canvas>
+        </a>
+    </div>
+</div>
