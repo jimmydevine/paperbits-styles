@@ -3,9 +3,9 @@
         <a href="#" data-bind="text: page, click: $component.pageSelect"></a>
     </div>
 </div>
-<div data-bind="foreach: { data: glyphs2, as: 'glyph2' }">
-    <a href="#" data-bind="click: $component.cellSelect">
-        <canvas width="44" height="40" class="item" style="width: 44px; height: 40px;"
-            data-bind="attr: { id: glyph2.id }, highDpiCanvas: {}"></canvas>
+<div class="" data-bind="foreach: { data: glyphs, as: 'glyph' }">
+    <a href="#" data-bind="click: $component.selectGlyph" class="list-item list-item-icon">
+        <canvas width="50" height="50" class="item" style="width: 50px; height: 50px;"
+            data-bind="attr: { id: glyph.id }, highDpiCanvas: {}"></canvas>
     </a>
 </div>

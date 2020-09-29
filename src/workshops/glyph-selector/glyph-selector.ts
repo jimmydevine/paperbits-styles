@@ -1,7 +1,5 @@
 
 import * as ko from "knockout";
-import * as Utils from "@paperbits/common/utils";
-import * as Objects from "@paperbits/common";
 import template from "./glyph-selector.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
 import * as opentype from "opentype.js";
@@ -13,35 +11,29 @@ import * as opentype from "opentype.js";
 })
 export class GlyphSelector {
     private cellCount = 100;
-    public cellWidth = 44;
-    public cellHeight = 40;
-    public cellMarginTop = 1;
-    public cellMarginBottom = 8;
-    public cellMarginLeftRight = 1;
-    public glyphMargin = 5;
+    public cellWidth = 50;
+    public cellHeight = 50;
+    public cellMarginTop = 10;
+    public cellMarginBottom = 10;
+    public cellMarginLeftRight = 10;
+    public glyphMargin = 0;
     public pixelRatio = window.devicePixelRatio || 1;
-
-    private arrowLength = 10;
-    public arrowAperture = 4;
 
     private pageSelected;
     public font;
     public fontScale;
     public fontSize;
     public fontBaseline;
-    public glyphScale;
-    public glyphSize;
-    public glyphBaseline;
 
-    public glyphs2: ko.ObservableArray;
+    public glyphs: ko.ObservableArray;
     public pages: ko.ObservableArray;
 
 
     constructor() {
-        this.glyphs2 = ko.observableArray();
+        this.glyphs = ko.observableArray();
         this.pages = ko.observableArray();
 
-        this.cellSelect = this.cellSelect.bind(this);
+        this.selectGlyph = this.selectGlyph.bind(this);
     }
 
     @OnMounted()
@@ -56,7 +48,7 @@ export class GlyphSelector {
 
     private prepareGlyphList(): void {
         for (let i = 0; i < this.cellCount; i++) {
-            this.glyphs2().push({ id: "g" + i, index: i });
+            this.glyphs().push({ id: "g" + i, index: i });
         }
     }
 
@@ -71,14 +63,12 @@ export class GlyphSelector {
     }
 
     private renderGlyphItem(canvas: HTMLCanvasElement, glyphIndex): void {
-        const cellMarkSize = 4;
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, this.cellWidth, this.cellHeight);
-        if (glyphIndex >= this.font.numGlyphs) return;
 
-        ctx.fillStyle = "#606060";
-        ctx.font = "9px sans-serif";
-        ctx.fillText(glyphIndex, 1, this.cellHeight - 1);
+        if (glyphIndex >= this.font.numGlyphs) {
+            return;
+        }
 
         const glyph = this.font.glyphs.get(glyphIndex),
             glyphWidth = glyph.advanceWidth * this.fontScale,
@@ -86,13 +76,6 @@ export class GlyphSelector {
             xmax = (this.cellWidth + glyphWidth) / 2,
             x0 = xmin;
 
-        ctx.fillStyle = "#a0a0a0";
-        ctx.fillRect(xmin - cellMarkSize + 1, this.fontBaseline, cellMarkSize, 1);
-        ctx.fillRect(xmin, this.fontBaseline, 1, cellMarkSize);
-        ctx.fillRect(xmax, this.fontBaseline, cellMarkSize, 1);
-        ctx.fillRect(xmax, this.fontBaseline, 1, cellMarkSize);
-
-        ctx.fillStyle = "#000000";
         glyph.draw(ctx, x0, this.fontBaseline, this.fontSize);
     }
 
@@ -112,10 +95,10 @@ export class GlyphSelector {
     private onFontLoaded(font): void {
         this.font = font;
 
-        const w = this.cellWidth - this.cellMarginLeftRight * 2,
-            h = this.cellHeight - this.cellMarginTop - this.cellMarginBottom,
-            head = this.font.tables.head,
-            maxHeight = head.yMax - head.yMin;
+        const w = this.cellWidth - this.cellMarginLeftRight * 2;
+        const h = this.cellHeight - this.cellMarginTop - this.cellMarginBottom;
+        const head = this.font.tables.head;
+        const maxHeight = head.yMax - head.yMin;
 
         this.fontScale = Math.min(w / (head.xMax - head.xMin), h / maxHeight);
         this.fontSize = this.fontScale * this.font.unitsPerEm;
@@ -132,7 +115,7 @@ export class GlyphSelector {
         setTimeout(() => { this.displayGlyphPage(0); }, 1000);
     }
 
-    public cellSelect(glyphInfo: any): void {
+    public async selectGlyph(glyphInfo: any): Promise<void> {
         if (!this.font) {
             return;
         }
@@ -144,5 +127,23 @@ export class GlyphSelector {
         const glyph = this.font.glyphs.get(glyphIndex);
 
         console.log(glyph);
+
+        await this.makeFont(glyph);
+    }
+
+    public async makeFont(glyph: any): Promise<void> {
+        const glyphs = [glyph]; // [notdefGlyph, aGlyph];
+
+        const font = new opentype.Font({
+            familyName: "OpenTypeSans",
+            styleName: "Medium",
+            unitsPerEm: 1000,
+            ascender: 800,
+            descender: -200,
+            glyphs: glyphs
+        });
+
+        font.download();
+        // font.toArrayBuffer(); // to be upladed to storage
     }
 }
