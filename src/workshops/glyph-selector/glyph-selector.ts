@@ -40,7 +40,9 @@ export class GlyphSelector {
     public async init(): Promise<void> {
         this.prepareGlyphList();
 
-        const font = await opentype.load("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf", null, { lowMemory: true });
+        const fontUrl = "http://cdn.paperbits.io/fonts/icons.woff";
+        // const fontUrl = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf"
+        const font = await opentype.load(fontUrl, null, { lowMemory: true });
 
         console.log(font);
         this.onFontLoaded(font);
@@ -52,17 +54,7 @@ export class GlyphSelector {
         }
     }
 
-    private formatUnicode(unicode: any): string {
-        unicode = unicode.toString(16);
-
-        if (unicode.length > 4) {
-            return ("000000" + unicode.toUpperCase()).substr(-6);
-        } else {
-            return ("0000" + unicode.toUpperCase()).substr(-4);
-        }
-    }
-
-    private renderGlyphItem(canvas: HTMLCanvasElement, glyphIndex): void {
+    private renderGlyphItem(canvas: HTMLCanvasElement, glyphIndex: number): void {
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, this.cellWidth, this.cellHeight);
 
@@ -128,7 +120,7 @@ export class GlyphSelector {
 
         console.log(glyph);
 
-        await this.makeFont(glyph);
+        // await this.makeFont(glyph);
     }
 
     public async makeFont(glyph: any): Promise<void> {

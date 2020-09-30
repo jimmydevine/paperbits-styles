@@ -1,5 +1,6 @@
 import * as Utils from "@paperbits/common/utils";
 import * as Objects from "@paperbits/common/objects";
+import { formatUnicode } from "./styleUitls";
 import { StyleService } from "./styleService";
 import { Bag } from "@paperbits/common";
 import { IPermalinkResolver } from "@paperbits/common/permalinks";
@@ -195,6 +196,22 @@ export class DefaultStyleCompiler implements StyleCompiler {
                 const colorStyle = new Style(colorStyleSelector);
                 colorStyle.addRule(new StyleRule("color", themeContract.colors[colorName].value));
                 styleSheet.styles.push(colorStyle);
+            }
+        }
+
+        if (themeContract.icons) {
+            for (const iconName of Object.keys(themeContract.icons)) {
+                const icon = themeContract.icons[iconName];
+                const formattedUnicode = formatUnicode(icon.unicode);
+                const selector = `icon-${iconName}`;
+                const iconStyle = new Style(selector);
+                const pseudoStyle = new Style("before");
+
+                pseudoStyle.addRule(new StyleRule("content", `'\\\\${formattedUnicode}'`));
+                iconStyle.pseudoStyles.push(pseudoStyle);
+
+                styleSheet.styles.push(iconStyle);
+                console.log(iconStyle.toJssString());
             }
         }
 

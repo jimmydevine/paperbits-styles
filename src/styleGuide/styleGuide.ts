@@ -7,9 +7,10 @@ import { Component, OnMounted, OnDestroyed } from "@paperbits/common/ko/decorato
 import { IStyleGroup, Styleable, VariationContract, StyleManager, StyleCompiler } from "@paperbits/common/styles";
 import { View, ViewManager, ViewManagerMode, IHighlightConfig, IContextCommandSet } from "@paperbits/common/ui";
 import { StyleService } from "../styleService";
-import { FontContract, ColorContract, ShadowContract, LinearGradientContract } from "../contracts";
+import { FontContract, ColorContract, ShadowContract, LinearGradientContract, IconContract } from "../contracts";
 import { StyleItem } from "../models/styleItem";
 import { ComponentStyle } from "../contracts/componentStyle";
+import { formatUnicode } from "../styleUitls";
 
 @Component({
     selector: "style-guide",
@@ -34,6 +35,7 @@ export class StyleGuide {
     public readonly colors: ko.ObservableArray<ColorContract>;
     public readonly shadows: ko.ObservableArray<ShadowContract>;
     public readonly gradients: ko.ObservableArray<LinearGradientContract>;
+    public readonly icons: ko.ObservableArray<any>;
     public readonly textStyles: ko.ObservableArray<any>;
     public readonly navBars: ko.ObservableArray<any>;
     public readonly uiComponents: ko.ObservableArray<ComponentStyle>;
@@ -49,6 +51,7 @@ export class StyleGuide {
         this.colors = ko.observableArray([]);
         this.shadows = ko.observableArray([]);
         this.gradients = ko.observableArray([]);
+        this.icons = ko.observableArray([]);
         this.fonts = ko.observableArray([]);
         this.buttons = ko.observableArray([]);
         this.cards = ko.observableArray([]);
@@ -61,7 +64,7 @@ export class StyleGuide {
     }
 
     @OnMounted()
-    public async loadStyles(): Promise<void> {
+    public async initialize(): Promise<void> {
         this.viewManager.mode = ViewManagerMode.selecting;
         this.applyChanges();
         this.ownerDocument = this.viewManager.getHostDocument();
@@ -177,7 +180,7 @@ export class StyleGuide {
         };
 
         this.viewManager.openViewAsPopup(view);
-        
+
         return true;
     }
 
@@ -289,6 +292,13 @@ export class StyleGuide {
             ? Object.values(styles.shadows).filter(x => x.key !== "shadows/none")
             : [];
         this.shadows(this.sortByDisplayName(shadows));
+
+        const icons = Object.values(styles.icons).map(icon => ({
+            class: icon.key.replace("icons/", "icon-"),
+            displayName: icon.displayName,
+            unicode: formatUnicode(icon.unicode)
+        }));
+        this.icons(icons);
 
         const textStylesVariations = await this.styleService.getVariations("globals", "body");
         this.textStyles(this.sortByDisplayName(textStylesVariations));
