@@ -312,7 +312,8 @@ export class StyleGuide {
         this.shadows(this.sortByDisplayName(shadows));
 
         const icons = Object.values(styles.icons).map(icon => ({
-            class: Utils.camelCaseToKebabCase(icon.key.replace("icons/", "icon-")),  
+            key: icon.key,
+            class: Utils.camelCaseToKebabCase(icon.key.replace("icons/", "icon-")),
             displayName: icon.displayName,
             unicode: formatUnicode(icon.unicode)
         }));
@@ -564,6 +565,7 @@ export class StyleGuide {
         }
 
         if (!style.key.startsWith("colors/") &&
+            !style.key.startsWith("icons/") &&
             !style.key.startsWith("fonts/") &&
             !style.key.startsWith("shadows/") &&
             !style.key.startsWith("gradients/") &&
@@ -597,7 +599,7 @@ export class StyleGuide {
                 }
             });
         }
-        else if (!style.key.startsWith("fonts/")) {
+        else if (!style.key.startsWith("fonts/") && !style.key.startsWith("icons/")) {
             styleContextualEditor.selectCommands.push({
                 name: "edit",
                 tooltip: "Edit variation",
