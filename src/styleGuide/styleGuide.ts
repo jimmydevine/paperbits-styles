@@ -133,6 +133,24 @@ export class StyleGuide {
         this.selectShadow(addedItem);
     }
 
+    public async addIcon(): Promise<void> {
+        const view: View = {
+            heading: "Add icons",
+            component: {
+                name: "glyph-import",
+                params: {
+                    onSelect: () => {
+                        this.viewManager.closeView();
+                        this.applyChanges();
+                    }
+                }
+            },
+            resize: "vertically horizontally"
+        };
+
+        this.viewManager.openViewAsPopup(view);
+    }
+
     public async removeColor(color: ColorContract): Promise<void> {
         await this.styleService.removeStyle(color.key);
         this.applyChanges();
@@ -294,7 +312,7 @@ export class StyleGuide {
         this.shadows(this.sortByDisplayName(shadows));
 
         const icons = Object.values(styles.icons).map(icon => ({
-            class: icon.key.replace("icons/", "icon-"),
+            class: Utils.camelCaseToKebabCase(icon.key.replace("icons/", "icon-")),  
             displayName: icon.displayName,
             unicode: formatUnicode(icon.unicode)
         }));

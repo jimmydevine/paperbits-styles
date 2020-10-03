@@ -1,0 +1,9 @@
+<!-- ko foreach: { data: libraries, as: 'library' } -->
+<h2 data-bind="text: library.displayName"></h2>
+<glyph-selector params="{ fontSource: library.sourceUrl, onSelect: $component.addIcon }"></glyph-selector>
+<!-- /ko -->
+
+<!-- <button class="btn" data-bind="click: uploadFont">
+    <i class="paperbits-icon paperbits-square-upload"></i>
+    Upload font
+</button> -->

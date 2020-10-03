@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import * as Utils from "@paperbits/common/utils";
 import * as Objects from "@paperbits/common/objects";
 import { IObjectStorage } from "@paperbits/common/persistence";
-import { ThemeContract, ColorContract, ShadowContract, LinearGradientContract } from "./contracts";
+import { ThemeContract, ColorContract, ShadowContract, LinearGradientContract, IconContract } from "./contracts";
 import { StyleItem } from "./models/styleItem";
 import { ComponentStyle } from "./contracts/componentStyle";
 import { StyleHandler, VariationContract } from "@paperbits/common/styles";
@@ -305,4 +305,18 @@ export class StyleService {
         return referencedStyles;
     }
 
+    public async addIcon(name: string, displayName: string, unicode: number): Promise<void> {
+        const styles = await this.getStyles();
+        const identifier = Utils.identifier();
+        const icon: IconContract = {
+            key: `icons/${identifier}`,
+            name: name,
+            displayName: displayName,
+            unicode: unicode
+        };
+
+        styles.icons[identifier] = icon;
+
+        await this.updateStyles(styles);
+    }
 }

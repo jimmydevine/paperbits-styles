@@ -203,15 +203,14 @@ export class DefaultStyleCompiler implements StyleCompiler {
             for (const iconName of Object.keys(themeContract.icons)) {
                 const icon = themeContract.icons[iconName];
                 const formattedUnicode = formatUnicode(icon.unicode);
-                const selector = `icon-${iconName}`;
-                const iconStyle = new Style(selector);
+                const iconStyleSelector = `icon-${Utils.camelCaseToKebabCase(iconName)}`;
+                const iconStyle = new Style(iconStyleSelector);
                 const pseudoStyle = new Style("before");
 
                 pseudoStyle.addRule(new StyleRule("content", `'\\\\${formattedUnicode}'`));
                 iconStyle.pseudoStyles.push(pseudoStyle);
 
                 styleSheet.styles.push(iconStyle);
-                console.log(iconStyle.toJssString());
             }
         }
 

@@ -1,7 +1,5 @@
-<div>
-    <div data-bind="foreach: { data: pages, as: 'page' }">
-        <a href="#" data-bind="text: page, click: $component.pageSelect"></a>
-    </div>
+<div data-bind="foreach: { data: pages, as: 'page' }">
+    <a href="#" data-bind="text: page, click: $component.pageSelect"></a>
 </div>
 <div class="" data-bind="foreach: { data: glyphs, as: 'glyph' }">
     <a href="#" data-bind="click: $component.selectGlyph" class="list-item list-item-icon">

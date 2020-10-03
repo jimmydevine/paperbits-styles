@@ -21,9 +21,9 @@ export class GlyphSelector {
 
     private pageSelected;
     public font;
-    public fontScale;
-    public fontSize;
-    public fontBaseline;
+    public fontScale: number;
+    public fontSize: number;
+    public fontBaseline: number;
 
     public glyphs: ko.ObservableArray;
     public pages: ko.ObservableArray;
@@ -33,15 +33,28 @@ export class GlyphSelector {
         this.glyphs = ko.observableArray();
         this.pages = ko.observableArray();
 
+        this.fontSource = ko.observable();
+
         this.selectGlyph = this.selectGlyph.bind(this);
     }
+
+    @Param()
+    public fontSource: ko.Observable<string>;
+
+    @Event()
+    public onSelect: (glyph: any) => void;
 
     @OnMounted()
     public async init(): Promise<void> {
         this.prepareGlyphList();
 
-        const fontUrl = "http://cdn.paperbits.io/fonts/icons.woff";
-        // const fontUrl = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf"
+        // const fontUrl = "http://cdn.paperbits.io/fonts/icons.woff";
+        // const fontUrl = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf";
+
+
+        const fontUrl = this.fontSource();
+        console.log(fontUrl);
+
         const font = await opentype.load(fontUrl, null, { lowMemory: true });
 
         console.log(font);
@@ -118,24 +131,8 @@ export class GlyphSelector {
 
         const glyph = this.font.glyphs.get(glyphIndex);
 
-        console.log(glyph);
-
-        // await this.makeFont(glyph);
-    }
-
-    public async makeFont(glyph: any): Promise<void> {
-        const glyphs = [glyph]; // [notdefGlyph, aGlyph];
-
-        const font = new opentype.Font({
-            familyName: "OpenTypeSans",
-            styleName: "Medium",
-            unitsPerEm: 1000,
-            ascender: 800,
-            descender: -200,
-            glyphs: glyphs
-        });
-
-        font.download();
-        // font.toArrayBuffer(); // to be upladed to storage
+        if (this.onSelect) {
+            this.onSelect(glyph);
+        }
     }
 }

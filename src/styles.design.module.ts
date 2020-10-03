@@ -42,13 +42,15 @@ import { StyleVariationSelector } from "./workshops/snippets/styleVariationSelec
 import { StyledBindingHandler } from "./ko/bindingHandlers";
 import { OptionSelectorEditor } from "./workshops/optionSelector/optionSelectorEditor";
 import { SizeEditor } from "./workshops/size/sizeEditor";
-import { GlyphSelector } from "./workshops/glyph-selector/glyph-selector";
+import { GlyphSelector } from "./workshops/icons/glyph-selector/glyph-selector";
+import { GlyphImport } from "./workshops/icons/glyph-import/glyph-import";
 
 export class StylesDesignModule implements IInjectorModule {
     public register(injector: IInjector): void {
         injector.bindModule(new StyleModule());
         injector.bind("fontSelector", FontSelector);
         injector.bind("glyphSelector", GlyphSelector);
+        injector.bind("glyphImport", GlyphImport);
         injector.bind("googleFonts", GoogleFonts);
         injector.bind("typography", Typography);
         injector.bind("container", Container);
