@@ -5,6 +5,9 @@ import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorat
 import * as opentype from "opentype.js";
 import { Font } from "../font";
 import { FontGlyph, FontGlyphPoint } from "../fontGlyph";
+import * as fontkit from "fontkit/base";
+import { HttpClient } from "@paperbits/common/http";
+import { ViewManager } from "@paperbits/common/ui";
 
 
 @Component({
@@ -16,7 +19,7 @@ export class GlyphSelector {
     public glyphs: ko.ObservableArray;
     public pages: ko.ObservableArray;
 
-    constructor() {
+    constructor(private readonly viewManager: ViewManager) {
         this.glyphs = ko.observableArray([]);
         this.pages = ko.observableArray();
         this.fontSource = ko.observable();
@@ -32,10 +35,11 @@ export class GlyphSelector {
     @OnMounted()
     public async init(): Promise<void> {
         const fontUrl = this.fontSource();
-        const font = await opentype.load(fontUrl, null, { lowMemory: true });
+        const font = await opentype.load(fontUrl, null, { lowMemory: false });
+      //   font.download();
 
         this.font = font;
-        
+
         for (let index = 0; index < this.font.numGlyphs; index++) {
             const glyph: FontGlyph = this.font.glyphs.get(index);
 
@@ -57,5 +61,41 @@ export class GlyphSelector {
         if (this.onSelect) {
             this.onSelect(glyph);
         }
+    }
+
+    private async blobToBuffer(blob): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            if (typeof Blob === "undefined" || !(blob instanceof Blob)) {
+                throw new Error("first argument must be a Blob");
+            }
+
+            const reader = new FileReader();
+
+            const onLoadEnd = (e) => {
+                reader.removeEventListener("loadend", onLoadEnd, false);
+                if (e.error) {
+                    reject(e.error);
+                }
+                else {
+                    resolve(Buffer.from(reader.result));
+                }
+            };
+
+            reader.addEventListener("loadend", onLoadEnd, false);
+            reader.readAsArrayBuffer(blob);
+        });
+    }
+
+    public async uploadFont(): Promise<void> {
+        const files = await this.viewManager.openUploadDialog();
+        const file = files[0];
+
+        const b = await this.blobToBuffer(file);
+
+        const ffff = fontkit.create(b);
+        console.log(ffff);
+        // debugger;
+
+        // return;
     }
 }

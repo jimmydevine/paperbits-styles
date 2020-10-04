@@ -27,10 +27,10 @@ export class GlyphImport {
                 displayName: "Font Awesome icons",
                 sourceUrl: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf"
             },
-            {
-                displayName: "Material Design icons",
-                sourceUrl: " https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf"
-            },
+            // {
+            //     displayName: "Material Design icons",
+            //     sourceUrl: "https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf"
+            // },
 
             // {
             //     displayName: "Nucleo",
@@ -53,24 +53,37 @@ export class GlyphImport {
         }
     }
 
-    public async makeFont(glyph: FontGlyph): Promise<void> {
-        // const fontUrl = await this.blobStorage.getDownloadUrl("fonts/icons.ttf");
-
-        const cccc = await this.blobStorage.downloadBlob("fonts/icons.ttf");
+    public async makeFont(newGlyph: FontGlyph): Promise<void> {
+        const fontUrl = await this.blobStorage.getDownloadUrl("fonts/icons.ttf");
 
         let font: Font;
-        const glyphs = [];
 
-        if (cccc) {
-            // font = await opentype.load(fontUrl, null, { lowMemory: true });
-            font = opentype.parse(cccc);
+        const glyphs = [];
+        const advanceWidths = [];
+
+        if (fontUrl) {
+            font = await opentype.load(fontUrl, null, { lowMemory: true });
 
             for (let index = 0; index < font.numGlyphs; index++) {
-                glyphs.push(font.glyphs.get(index));
+                const glyphInFont = font.glyphs.get(index);
+                glyphs.push(glyphInFont);
+                advanceWidths.push(glyphInFont.advanceWidth);
             }
         }
+        else {
+            const notdefGlyph = new opentype.Glyph({
+                name: ".notdef",
+                unicode: 0,
+                advanceWidth: 650,
+                path: new opentype.Path()
+            });
 
-        glyphs.push(glyph);
+            glyphs.push(notdefGlyph);
+            advanceWidths.push(notdefGlyph.advanceWidth);
+        }
+
+        glyphs.push(newGlyph);
+        advanceWidths.push(newGlyph.advanceWidth);
 
         font = new opentype.Font({
             familyName: "MyIcons",
@@ -81,9 +94,11 @@ export class GlyphImport {
             glyphs: glyphs
         });
 
-        const fontArrayBuffer: any = font.toArrayBuffer();
+        glyphs.forEach((x, index) => { x.advanceWidth = advanceWidths[index]; });
 
-        await this.blobStorage.uploadBlob("fonts/icons.ttf", fontArrayBuffer, "font/ttf");
+        const fontArrayBuffer = font.toArrayBuffer();
+
+        await this.blobStorage.uploadBlob("fonts/icons.ttf", new Uint8Array(fontArrayBuffer), "font/ttf");
 
         font.download();
     }
