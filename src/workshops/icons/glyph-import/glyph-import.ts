@@ -1,12 +1,10 @@
 
 import * as ko from "knockout";
 import template from "./glyph-import.html";
-import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
-import * as Utils from "@paperbits/common";
+import { Component, Event } from "@paperbits/common/ko/decorators";
 import * as opentype from "opentype.js";
 import { StyleService } from "../../../styleService";
 import { FontGlyph } from "../fontGlyph";
-import { IconContract } from "../../../contracts";
 import { IBlobStorage } from "@paperbits/common/persistence";
 import { Font } from "../font";
 
@@ -59,7 +57,7 @@ export class GlyphImport {
         let font: Font;
 
         const glyphs = [];
-        const advanceWidths = [];
+        const advanceWidths = []; // capturing advanceWidths.
 
         if (fontUrl) {
             font = await opentype.load(fontUrl, null, { lowMemory: true });
@@ -94,7 +92,8 @@ export class GlyphImport {
             glyphs: glyphs
         });
 
-        glyphs.forEach((x, index) => { x.advanceWidth = advanceWidths[index]; });
+        // Restoring advanceWidth
+        glyphs.forEach((x, index) => x.advanceWidth = advanceWidths[index]);
 
         const fontArrayBuffer = font.toArrayBuffer();
 

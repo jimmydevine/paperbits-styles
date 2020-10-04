@@ -1,14 +1,9 @@
 
 import * as ko from "knockout";
+import * as opentype from "opentype.js";
 import template from "./glyph-selector.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
-import * as opentype from "opentype.js";
-import { Font } from "../font";
-import { FontGlyph, FontGlyphPoint } from "../fontGlyph";
-import * as fontkit from "fontkit/base";
-import { HttpClient } from "@paperbits/common/http";
-import { ViewManager } from "@paperbits/common/ui";
-
+import { Font, FontGlyph } from "../";
 
 @Component({
     selector: "glyph-selector",
@@ -19,7 +14,7 @@ export class GlyphSelector {
     public glyphs: ko.ObservableArray;
     public pages: ko.ObservableArray;
 
-    constructor(private readonly viewManager: ViewManager) {
+    constructor() {
         this.glyphs = ko.observableArray([]);
         this.pages = ko.observableArray();
         this.fontSource = ko.observable();
@@ -36,7 +31,7 @@ export class GlyphSelector {
     public async init(): Promise<void> {
         const fontUrl = this.fontSource();
         const font = await opentype.load(fontUrl, null, { lowMemory: false });
-      //   font.download();
+        //   font.download();
 
         this.font = font;
 
@@ -84,18 +79,5 @@ export class GlyphSelector {
             reader.addEventListener("loadend", onLoadEnd, false);
             reader.readAsArrayBuffer(blob);
         });
-    }
-
-    public async uploadFont(): Promise<void> {
-        const files = await this.viewManager.openUploadDialog();
-        const file = files[0];
-
-        const b = await this.blobToBuffer(file);
-
-        const ffff = fontkit.create(b);
-        console.log(ffff);
-        // debugger;
-
-        // return;
     }
 }
