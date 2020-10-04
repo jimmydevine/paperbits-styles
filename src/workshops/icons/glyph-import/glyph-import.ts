@@ -7,6 +7,8 @@ import * as opentype from "opentype.js";
 import { StyleService } from "../../../styleService";
 import { FontGlyph } from "../fontGlyph";
 import { IconContract } from "../../../contracts";
+import { IBlobStorage } from "@paperbits/common/persistence";
+import { Font } from "../font";
 
 
 @Component({
@@ -16,7 +18,10 @@ import { IconContract } from "../../../contracts";
 export class GlyphImport {
     public libraries: ko.ObservableArray;
 
-    constructor(private readonly styleService: StyleService) {
+    constructor(
+        private readonly styleService: StyleService,
+        private readonly blobStorage: IBlobStorage
+    ) {
         this.libraries = ko.observableArray([
             {
                 displayName: "Font Awesome icons",
@@ -40,6 +45,7 @@ export class GlyphImport {
     public onSelect: () => void;
 
     public async addIcon(glyph: FontGlyph): Promise<void> {
+        await this.makeFont(glyph);
         await this.styleService.addIcon(glyph.name, glyph.name, glyph.unicode);
 
         if (this.onSelect) {
@@ -48,10 +54,26 @@ export class GlyphImport {
     }
 
     public async makeFont(glyph: FontGlyph): Promise<void> {
-        const glyphs = [glyph]; // [notdefGlyph, aGlyph];
+        // const fontUrl = await this.blobStorage.getDownloadUrl("fonts/icons.ttf");
 
-        const font = new opentype.Font({
-            familyName: "OpenTypeSans",
+        const cccc = await this.blobStorage.downloadBlob("fonts/icons.ttf");
+
+        let font: Font;
+        const glyphs = [];
+
+        if (cccc) {
+            // font = await opentype.load(fontUrl, null, { lowMemory: true });
+            font = opentype.parse(cccc);
+
+            for (let index = 0; index < font.numGlyphs; index++) {
+                glyphs.push(font.glyphs.get(index));
+            }
+        }
+
+        glyphs.push(glyph);
+
+        font = new opentype.Font({
+            familyName: "MyIcons",
             styleName: "Medium",
             unitsPerEm: 1000,
             ascender: 800,
@@ -59,7 +81,10 @@ export class GlyphImport {
             glyphs: glyphs
         });
 
+        const fontArrayBuffer: any = font.toArrayBuffer();
+
+        await this.blobStorage.uploadBlob("fonts/icons.ttf", fontArrayBuffer, "font/ttf");
+
         font.download();
-        // font.toArrayBuffer(); // to be upladed to storage
     }
 }

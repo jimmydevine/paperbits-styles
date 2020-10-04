@@ -3,4 +3,6 @@ export interface Font {
     glyphs: any;
     unitsPerEm: number;
     tables: any;
+    download: () => void;
+    toArrayBuffer: () => ArrayBuffer;
 }

@@ -38,7 +38,7 @@ import {
     VariationBagContract,
     StateBagContract,
     LocalStyles,
-    PluginBag
+    PluginBag, FontFace
 } from "@paperbits/common/styles";
 import { JssCompiler } from "./jssCompiler";
 import { ThemeContract } from "./contracts/themeContract";
@@ -212,6 +212,19 @@ export class DefaultStyleCompiler implements StyleCompiler {
 
                 styleSheet.styles.push(iconStyle);
             }
+
+            // this.mediaPermalinkResolver.getUrlByTargetKey()
+            // const fontUrl = await this.blobStorage.getDownloadUrl("icons.ttf");
+
+            // if (fontUrl) {
+            //     const fontFace = new FontFace();
+            //     fontFace.fontFamily = "MyIcons";
+            //     fontFace.src = fontUrl;
+            //     fontFace.fontStyle = "normal";
+            //     fontFace.fontWeight = "normal";
+
+            //     styleSheet.fontFaces.push(fontFace);
+            // }
         }
 
         return styleSheet;
