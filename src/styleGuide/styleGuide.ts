@@ -145,7 +145,10 @@ export class StyleGuide {
                     }
                 }
             },
-            resize: "vertically horizontally"
+            resize: {
+                directions: "vertically horizontally",
+                initialWidth: 400
+            }
         };
 
         this.viewManager.openViewAsPopup(view);

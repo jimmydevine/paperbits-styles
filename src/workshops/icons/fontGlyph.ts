@@ -1,4 +1,4 @@
-export interface FontGyphPoint {
+export interface FontGlyphPoint {
     lastPointOfContour: boolean;
     onCurve: boolean;
     x: number;
@@ -10,5 +10,5 @@ export interface FontGlyph {
     index: number;
     unicode: number;
     advanceWidth: number;
-    points: FontGyphPoint[];
+    points: FontGlyphPoint[];
 }

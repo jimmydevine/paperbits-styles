@@ -10,7 +10,7 @@ import "./ko/bindingHandlers/bindingHandlers.jss";
 import "./ko/bindingHandlers/bindingHandlers.shadowPreview";
 import "./ko/bindingHandlers/bindingHandlers.gradientPreview";
 import "./ko/bindingHandlers/bindingHandlers.itemTemplate";
-import "./ko/bindingHandlers/bindingHandlers.highDpiCanvas";
+import "./ko/bindingHandlers/bindingHandlers.fontGlyph";
 import { IInjectorModule, IInjector } from "@paperbits/common/injection";
 import { StyleModule } from "./styles.module";
 import { StyleEditor } from "./workshops/styleEditor";

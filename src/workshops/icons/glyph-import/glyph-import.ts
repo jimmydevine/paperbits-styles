@@ -18,14 +18,20 @@ export class GlyphImport {
 
     constructor(private readonly styleService: StyleService) {
         this.libraries = ko.observableArray([
+            {
+                displayName: "Material design",
+                sourceUrl: " https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf"
+            },
             // {
             //     displayName: "Font Awesome",
             //     sourceUrl: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf"
             // },
-            {
-                displayName: "Nucleo",
-                sourceUrl: "http://cdn.paperbits.io/fonts/icons.woff"
-            }
+            // {
+            //     displayName: "Nucleo",
+            //     sourceUrl: "http://cdn.paperbits.io/fonts/icons.woff"
+            // }
+
+            // https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf
         ]);
     }
 
