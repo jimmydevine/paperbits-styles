@@ -1,13 +1,10 @@
 <div class="flex flex-row flex-wrap flex-item flex-item-grow" role="list" data-bind="scrollable: true">
     <!-- ko foreach: { data: libraries, as: 'library' } -->
-    <div class="flex-column">
-        <h2 class="text-center" data-bind="text: library.displayName"></h2>
-        <hr/>
-        <glyph-selector class="flex-row" params="{ fontSource: library.sourceUrl, onSelect: $component.addIcon }">
-        </glyph-selector>
-    </div>
+    <h2 class="text-center" data-bind="text: library.displayName"></h2>
+    <hr />
+    <glyph-selector class="flex-row" params="{ fontSource: library.sourceUrl, onSelect: $component.addIcon }">
+    </glyph-selector>
     <!-- /ko -->
-
 </div>
 
 
