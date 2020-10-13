@@ -7,7 +7,7 @@ import { Component, OnMounted, OnDestroyed } from "@paperbits/common/ko/decorato
 import { IStyleGroup, Styleable, VariationContract, StyleManager, StyleCompiler } from "@paperbits/common/styles";
 import { View, ViewManager, ViewManagerMode, IHighlightConfig, IContextCommandSet } from "@paperbits/common/ui";
 import { StyleService } from "../styleService";
-import { FontContract, ColorContract, ShadowContract, LinearGradientContract, IconContract } from "../contracts";
+import { FontContract, ColorContract, ShadowContract, LinearGradientContract, GlyphContract } from "../contracts";
 import { StyleItem } from "../models/styleItem";
 import { ComponentStyle } from "../contracts/componentStyle";
 import { formatUnicode } from "../styleUitls";
@@ -314,7 +314,7 @@ export class StyleGuide {
             : [];
         this.shadows(this.sortByDisplayName(shadows));
 
-        const icons = Object.values(styles.icons).map(icon => ({
+        const icons = Object.values(styles.icons.glyphs).map(icon => ({
             key: icon.key,
             class: Utils.camelCaseToKebabCase(icon.key.replace("icons/", "icon-")),
             displayName: icon.displayName,

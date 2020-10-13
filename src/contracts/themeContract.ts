@@ -1,6 +1,7 @@
 import { Bag } from "@paperbits/common";
-import { ColorContract, ShadowContract, AnimationContract, FontContract, LinearGradientContract, IconContract } from "./";
+import { ColorContract, ShadowContract, AnimationContract, FontContract, LinearGradientContract } from "./";
 import { ComponentBagContract } from "@paperbits/common/styles";
+import { IconSetContract } from "./iconSetContract";
 
 
 /**
@@ -32,7 +33,10 @@ export interface ThemeContract {
      */
     shadows?: Bag<ShadowContract>;
 
-    icons?: Bag<IconContract>;
+    /**
+     * Icon set definition.
+     */
+    icons?: IconSetContract;
 
     /**
      * Global component definitions.

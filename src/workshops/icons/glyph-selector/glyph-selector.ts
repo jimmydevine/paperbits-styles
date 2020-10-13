@@ -3,14 +3,15 @@ import * as ko from "knockout";
 import * as opentype from "opentype.js";
 import template from "./glyph-selector.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
-import { Font, FontGlyph } from "../";
+import { OpenTypeFontGlyph } from "../../../contracts/fontGlyph";
+import { OpenTypeFont } from "../../../contracts/openTypeFont";
 
 @Component({
     selector: "glyph-selector",
     template: template
 })
 export class GlyphSelector {
-    public font: Font;
+    public font: OpenTypeFont;
     public glyphs: ko.ObservableArray;
     public pages: ko.ObservableArray;
 
@@ -36,7 +37,7 @@ export class GlyphSelector {
         this.font = font;
 
         for (let index = 0; index < this.font.numGlyphs; index++) {
-            const glyph: FontGlyph = this.font.glyphs.get(index);
+            const glyph: OpenTypeFontGlyph = this.font.glyphs.get(index);
 
             if (!glyph.unicode || glyph.unicode.toString().length < 4) {
                 continue;

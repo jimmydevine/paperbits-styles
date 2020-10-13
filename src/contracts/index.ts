@@ -9,6 +9,6 @@ export * from "./fontContract";
 export * from "./linearGradientContract";
 export * from "./marginStylePluginConfig";
 export * from "./shadowContract";
-export * from "./iconContract";
+export * from "./glyphContract";
 export * from "./themeContract";
 export * from "./typographyContract";

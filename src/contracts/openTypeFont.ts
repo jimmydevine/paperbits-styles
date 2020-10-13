@@ -1,4 +1,4 @@
-export interface Font {
+export interface OpenTypeFont {
     numGlyphs: number;
     glyphs: any;
     unitsPerEm: number;

@@ -3,7 +3,7 @@ import { PrimitiveContract } from "@paperbits/common/styles";
 /**
  * Icon metadata.
  */
-export interface IconContract extends PrimitiveContract {
+export interface GlyphContract extends PrimitiveContract {
     /**
      * Glyph name in the icon font.
      */

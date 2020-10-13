@@ -200,10 +200,10 @@ export class DefaultStyleCompiler implements StyleCompiler {
         }
 
         if (themeContract.icons) {
-            for (const iconName of Object.keys(themeContract.icons)) {
-                const icon = themeContract.icons[iconName];
+            for (const glyphName of Object.keys(themeContract.icons.glyphs)) {
+                const icon = themeContract.icons.glyphs[glyphName];
                 const formattedUnicode = formatUnicode(icon.unicode);
-                const iconStyleSelector = `icon-${Utils.camelCaseToKebabCase(iconName)}`;
+                const iconStyleSelector = `icon-${Utils.camelCaseToKebabCase(glyphName)}`;
                 const iconStyle = new Style(iconStyleSelector);
                 const pseudoStyle = new Style("before");
 
@@ -214,7 +214,7 @@ export class DefaultStyleCompiler implements StyleCompiler {
             }
 
             // this.mediaPermalinkResolver.getUrlByTargetKey()
-            // const fontUrl = await this.blobStorage.getDownloadUrl("icons.ttf");
+            // const fontUrl = await this.blobStorage.getDownloadUrl("/styles/fonts/icons.ttf");
 
             // if (fontUrl) {
             //     const fontFace = new FontFace();

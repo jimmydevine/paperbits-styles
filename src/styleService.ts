@@ -1,12 +1,15 @@
 import * as _ from "lodash";
 import * as Utils from "@paperbits/common/utils";
 import * as Objects from "@paperbits/common/objects";
-import { IObjectStorage } from "@paperbits/common/persistence";
-import { ThemeContract, ColorContract, ShadowContract, LinearGradientContract, IconContract } from "./contracts";
+import * as opentype from "opentype.js";
+import { IBlobStorage, IObjectStorage } from "@paperbits/common/persistence";
+import { ThemeContract, ColorContract, ShadowContract, LinearGradientContract, GlyphContract } from "./contracts";
 import { StyleItem } from "./models/styleItem";
 import { ComponentStyle } from "./contracts/componentStyle";
 import { StyleHandler, VariationContract } from "@paperbits/common/styles";
-import { StylePrimitives } from "./constants";
+import { IconsFontBlobKey, StylePrimitives } from "./constants";
+import { OpenTypeFont } from "./contracts/openTypeFont";
+import { OpenTypeFontGlyph } from "./contracts/fontGlyph";
 
 
 const stylesPath = "styles";
@@ -14,6 +17,7 @@ const stylesPath = "styles";
 export class StyleService {
     constructor(
         private readonly objectStorage: IObjectStorage,
+        private readonly blobStorage: IBlobStorage,
         private readonly styleHandlers: StyleHandler[]
     ) { }
 
@@ -305,17 +309,77 @@ export class StyleService {
         return referencedStyles;
     }
 
-    public async addIcon(name: string, displayName: string, unicode: number): Promise<void> {
+
+    public async makeFont(styles: ThemeContract, newGlyph: OpenTypeFontGlyph): Promise<void> {
+        const fontUrl = await this.blobStorage.getDownloadUrl(IconsFontBlobKey);
+
+        let font: OpenTypeFont;
+
+        const glyphs = [];
+        const advanceWidths = []; // capturing advanceWidths.
+
+        if (fontUrl) {
+            font = await opentype.load(fontUrl, null, { lowMemory: true });
+
+            for (let index = 0; index < font.numGlyphs; index++) {
+                const glyphInFont = font.glyphs.get(index);
+                glyphs.push(glyphInFont);
+                advanceWidths.push(glyphInFont.advanceWidth);
+            }
+        }
+        else {
+            const notdefGlyph = new opentype.Glyph({
+                name: ".notdef",
+                unicode: 0,
+                advanceWidth: 650,
+                path: new opentype.Path()
+            });
+
+            glyphs.push(notdefGlyph);
+            advanceWidths.push(notdefGlyph.advanceWidth);
+        }
+
+        glyphs.push(newGlyph);
+        advanceWidths.push(newGlyph.advanceWidth);
+
+        font = new opentype.Font({
+            familyName: "MyIcons",
+            styleName: "Medium",
+            unitsPerEm: 1000,
+            ascender: 800,
+            descender: -200,
+            glyphs: glyphs
+        });
+
+        // Restoring advanceWidth
+        glyphs.forEach((x, index) => x.advanceWidth = advanceWidths[index]);
+
+        const fontArrayBuffer = font.toArrayBuffer();
+
+        await this.blobStorage.uploadBlob(IconsFontBlobKey, new Uint8Array(fontArrayBuffer), "font/ttf");
+
+        const downloadUrl = await this.blobStorage.getDownloadUrl(IconsFontBlobKey);
+        console.log(downloadUrl);
+
+        styles.fonts["icons"].variants[0].file = downloadUrl;
+
+        // font.download();
+    }
+
+    public async addIcon(glyph: OpenTypeFontGlyph): Promise<void> {
         const styles = await this.getStyles();
+
+        await this.makeFont(styles, glyph);
+
         const identifier = Utils.identifier();
-        const icon: IconContract = {
+        const icon: GlyphContract = {
             key: `icons/${identifier}`,
             name: name,
-            displayName: displayName,
-            unicode: unicode
+            displayName: glyph.name,
+            unicode: glyph.unicode
         };
 
-        styles.icons[identifier] = icon;
+        styles.icons.glyphs[identifier] = icon;
 
         await this.updateStyles(styles);
     }
