@@ -311,7 +311,7 @@ export class StyleService {
 
 
     public async makeFont(styles: ThemeContract, newGlyph: OpenTypeFontGlyph): Promise<void> {
-        const fontUrl = await this.blobStorage.getDownloadUrl(IconsFontBlobKey);
+        const fontUrl = styles.fonts["icons"].variants[0].file;
 
         let font: OpenTypeFont;
 
@@ -339,13 +339,17 @@ export class StyleService {
             advanceWidths.push(notdefGlyph.advanceWidth);
         }
 
+        if (!newGlyph.name) {
+            newGlyph.name = "Icon";
+        }
+
         glyphs.push(newGlyph);
         advanceWidths.push(newGlyph.advanceWidth);
 
         font = new opentype.Font({
             familyName: "MyIcons",
             styleName: "Medium",
-            unitsPerEm: 1000,
+            unitsPerEm: 500,
             ascender: 800,
             descender: -200,
             glyphs: glyphs
