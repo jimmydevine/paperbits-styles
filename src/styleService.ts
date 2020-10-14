@@ -349,7 +349,7 @@ export class StyleService {
         font = new opentype.Font({
             familyName: "MyIcons",
             styleName: "Medium",
-            unitsPerEm: 500,
+            unitsPerEm: 400,
             ascender: 800,
             descender: -200,
             glyphs: glyphs

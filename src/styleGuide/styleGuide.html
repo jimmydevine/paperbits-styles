@@ -257,9 +257,11 @@
         <h2 class="heading">Icons</h2>
         <div class="samples">
             <!-- ko foreach: { data: $component.icons, as: 'icon' } -->
-            <div class="sample style-card" data-bind="styleable: icon">
-                <i class="icon" data-bind="css: icon.class"></i>
-                <span class="style-card-label" data-bind="text: icon.displayName"></span>
+            <div tabindex="0" class="sample style-card" data-bind="styleable: icon">
+                <div class="style-card-body">
+                    <i class="icon" data-bind="css: icon.class"></i>
+                </div>
+                <div class="style-card-label" data-bind="text: icon.displayName"></div>
             </div>
             <!--/ko -->
             <div class="style-card style-card-empty">
