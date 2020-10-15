@@ -200,10 +200,10 @@ export class DefaultStyleCompiler implements StyleCompiler {
         }
 
         if (themeContract.icons) {
-            for (const glyphName of Object.keys(themeContract.icons.glyphs)) {
-                const icon = themeContract.icons.glyphs[glyphName];
+            for (const iconName of Object.keys(themeContract.icons)) {
+                const icon = themeContract.icons[iconName];
                 const formattedUnicode = formatUnicode(icon.unicode);
-                const iconStyleSelector = `icon-${Utils.camelCaseToKebabCase(glyphName)}`;
+                const iconStyleSelector = `icon-${Utils.camelCaseToKebabCase(iconName)}`;
                 const iconStyle = new Style(iconStyleSelector);
                 const pseudoStyle = new Style("before");
 

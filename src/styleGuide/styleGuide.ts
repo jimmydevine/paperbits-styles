@@ -314,7 +314,7 @@ export class StyleGuide {
             : [];
         this.shadows(this.sortByDisplayName(shadows));
 
-        const icons = Object.values(styles.icons.glyphs).map(icon => ({
+        const icons = Object.values(styles.icons).map(icon => ({
             key: icon.key,
             class: Utils.camelCaseToKebabCase(icon.key.replace("icons/", "icon-")),
             displayName: icon.displayName,
@@ -558,6 +558,33 @@ export class StyleGuide {
                             this.removeStyle(style);
                             this.viewManager.clearContextualEditors();
                             this.viewManager.notifySuccess("Styles", `Style "${style.displayName}" was deleted.`);
+                        },
+                        onDecline: () => {
+                            this.viewManager.clearContextualEditors();
+                        }
+                    }
+                }
+            };
+        }
+
+        if (style.key.startsWith("icons/")) {
+            styleContextualEditor.deleteCommand = {
+                tooltip: "Delete icon",
+                color: "#607d8b",
+                component: {
+                    name: "confirmation",
+                    params: {
+                        getMessage: async () => {
+                            return `Are you sure you want to delete this icon?`;
+                        },
+                        onConfirm: async () => {
+                            console.log(style);
+                            debugger;
+                            // this.styleService.removeIcon()
+
+                            // this.removeStyle(style);
+                            // this.viewManager.clearContextualEditors();
+                            // this.viewManager.notifySuccess("Styles", `Style "${style.displayName}" was deleted.`);
                         },
                         onDecline: () => {
                             this.viewManager.clearContextualEditors();

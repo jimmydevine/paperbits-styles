@@ -383,7 +383,7 @@ export class StyleService {
             unicode: glyph.unicode
         };
 
-        styles.icons.glyphs[identifier] = icon;
+        styles.icons[identifier] = icon;
 
         await this.updateStyles(styles);
     }
