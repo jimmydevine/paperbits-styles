@@ -36,6 +36,8 @@ export class GlyphSelector {
 
         this.font = font;
 
+        // this.parseLigatures(font);
+
         for (let index = 0; index < this.font.numGlyphs; index++) {
             const glyph: OpenTypeFontGlyph = this.font.glyphs.get(index);
 
@@ -59,26 +61,58 @@ export class GlyphSelector {
         }
     }
 
-    private async blobToBuffer(blob): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            if (typeof Blob === "undefined" || !(blob instanceof Blob)) {
-                throw new Error("first argument must be a Blob");
-            }
+    public parseLigatures(font: any): void {
+        const glyphIndexMap = font.tables.cmap.glyphIndexMap;
+        const reverseGlyphIndexMap = {};
 
-            const reader = new FileReader();
+        Object.keys(glyphIndexMap).forEach((key) => {
+            const value = glyphIndexMap[key];
+            reverseGlyphIndexMap[value] = key;
+        });
 
-            const onLoadEnd = (e) => {
-                reader.removeEventListener("loadend", onLoadEnd, false);
-                if (e.error) {
-                    reject(e.error);
-                }
-                else {
-                    resolve(Buffer.from(reader.result));
-                }
-            };
+        font.tables.gsub.lookups.forEach((lookup) => {
+            lookup.subtables.forEach((subtable) => {
+                subtable.ligatureSets.forEach((set) => {
 
-            reader.addEventListener("loadend", onLoadEnd, false);
-            reader.readAsArrayBuffer(blob);
+                    if (subtable.coverage.format === 1) {
+                        subtable.ligatureSets.forEach((set, i) => {
+                            set.forEach((ligature) => {
+                                let coverage1 = subtable.coverage.glyphs[i];
+                                coverage1 = reverseGlyphIndexMap[coverage1];
+                                coverage1 = parseInt(coverage1);
+                                const components = ligature.components.map((component) => {
+                                    component = reverseGlyphIndexMap[component];
+                                    component = parseInt(component);
+                                    return String.fromCharCode(component);
+                                });
+                                console.log(String.fromCharCode(coverage1), components.join(""), ligature.ligGlyph);
+                            });
+                        });
+                    }
+                    else {
+                        subtable.ligatureSets.forEach((set, i) => {
+                            set.forEach((ligature) => {
+                                const coverage2 = [];
+                                subtable.coverage.ranges.forEach((coverage) => {
+                                    for (let i = coverage.start; i <= coverage.end; i++) {
+                                        let character = reverseGlyphIndexMap[i];
+                                        character = parseInt(character);
+                                        coverage2.push(String.fromCharCode(character));
+                                    }
+                                });
+
+                                const components = ligature.components.map((component) => {
+                                    component = reverseGlyphIndexMap[component];
+                                    component = parseInt(component);
+                                    return String.fromCharCode(component);
+                                });
+                                console.log(coverage2[i] + components.join(""), ligature.ligGlyph);
+                            });
+                        });
+                    }
+
+                });
+            });
         });
     }
 }

@@ -19,10 +19,10 @@ export class GlyphImport {
         private readonly blobStorage: IBlobStorage
     ) {
         this.libraries = ko.observableArray([
-            {
-                displayName: "Font Awesome icons",
-                sourceUrl: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf"
-            },
+            // {
+            //     displayName: "Font Awesome icons",
+            //     sourceUrl: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf"
+            // },
             {
                 displayName: "Material Design icons",
                 sourceUrl: "https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf"
