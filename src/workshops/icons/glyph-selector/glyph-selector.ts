@@ -45,7 +45,7 @@ export class GlyphSelector {
                 continue;
             }
 
-            this.glyphs.push({ index: index });
+            this.glyphs.push({ index: index, name: glyph.name });
         }
     }
 
@@ -61,11 +61,15 @@ export class GlyphSelector {
         }
     }
 
-    public parseLigatures(font: any): void {
+    public parseLigatures(font: OpenTypeFont): void {
+        if (!font.tables.gsub) {
+            return;
+        }
+
         const glyphIndexMap = font.tables.cmap.glyphIndexMap;
         const reverseGlyphIndexMap = {};
 
-        Object.keys(glyphIndexMap).forEach((key) => {
+        Object.keys(glyphIndexMap).forEach((key: string) => {
             const value = glyphIndexMap[key];
             reverseGlyphIndexMap[value] = key;
         });
@@ -78,12 +82,15 @@ export class GlyphSelector {
                             let coverage1 = subtable.coverage.glyphs[i];
                             coverage1 = reverseGlyphIndexMap[coverage1];
                             coverage1 = parseInt(coverage1);
+
                             const components = ligature.components.map((component) => {
                                 component = reverseGlyphIndexMap[component];
                                 component = parseInt(component);
                                 return String.fromCharCode(component);
                             });
-                            console.log(String.fromCharCode(coverage1), components.join(""), ligature.ligGlyph);
+                            const name = String.fromCharCode(coverage1) + components.join("");
+                            const glyph = this.font.glyphs.get(ligature.ligGlyph);
+                            glyph.name = name;
                         });
                     });
                 }
@@ -106,8 +113,6 @@ export class GlyphSelector {
                             });
 
                             const name = coverage2[i] + components.join("");
-                            // console.log(name, ligature.ligGlyph);
-
                             const glyph = this.font.glyphs.get(ligature.ligGlyph);
                             glyph.name = name;
                         });

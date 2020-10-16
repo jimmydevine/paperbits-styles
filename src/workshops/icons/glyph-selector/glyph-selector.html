@@ -1,7 +1,9 @@
 <div class="flex flex-row flex-wrap flex-item flex-item-grow" role="list">
     <!-- ko foreach: { data: $component.glyphs, as: 'glyph' } -->
-    <a href="#" data-bind="click: $component.selectGlyph" class="list-item list-item-icon">
-        <canvas width="50" height="50" class="item" data-bind="fontGlyph: { font: $component.font, glyphIndex: glyph.index }, attr: { title: glyph.index }"></canvas>
+    <a href="#" data-bind="click: $component.selectGlyph, tooltip: glyph.name" class="list-item list-item-icon">
+        <canvas width="50" height="50" class="item"
+            data-bind="fontGlyph: { font: $component.font, glyphIndex: glyph.index }"></canvas>
+        <div class="text-overflow" data-bind="text: glyph.name"></div>
     </a>
     <!-- /ko -->
 </div>
