@@ -36,7 +36,7 @@ export class GlyphSelector {
 
         this.font = font;
 
-        // this.parseLigatures(font);
+        this.parseLigatures(font);
 
         for (let index = 0; index < this.font.numGlyphs; index++) {
             const glyph: OpenTypeFontGlyph = this.font.glyphs.get(index);
@@ -72,46 +72,47 @@ export class GlyphSelector {
 
         font.tables.gsub.lookups.forEach((lookup) => {
             lookup.subtables.forEach((subtable) => {
-                subtable.ligatureSets.forEach((set) => {
-
-                    if (subtable.coverage.format === 1) {
-                        subtable.ligatureSets.forEach((set, i) => {
-                            set.forEach((ligature) => {
-                                let coverage1 = subtable.coverage.glyphs[i];
-                                coverage1 = reverseGlyphIndexMap[coverage1];
-                                coverage1 = parseInt(coverage1);
-                                const components = ligature.components.map((component) => {
-                                    component = reverseGlyphIndexMap[component];
-                                    component = parseInt(component);
-                                    return String.fromCharCode(component);
-                                });
-                                console.log(String.fromCharCode(coverage1), components.join(""), ligature.ligGlyph);
+                if (subtable.coverage.format === 1) {
+                    subtable.ligatureSets.forEach((set, i) => {
+                        set.forEach((ligature) => {
+                            let coverage1 = subtable.coverage.glyphs[i];
+                            coverage1 = reverseGlyphIndexMap[coverage1];
+                            coverage1 = parseInt(coverage1);
+                            const components = ligature.components.map((component) => {
+                                component = reverseGlyphIndexMap[component];
+                                component = parseInt(component);
+                                return String.fromCharCode(component);
                             });
+                            console.log(String.fromCharCode(coverage1), components.join(""), ligature.ligGlyph);
                         });
-                    }
-                    else {
-                        subtable.ligatureSets.forEach((set, i) => {
-                            set.forEach((ligature) => {
-                                const coverage2 = [];
-                                subtable.coverage.ranges.forEach((coverage) => {
-                                    for (let i = coverage.start; i <= coverage.end; i++) {
-                                        let character = reverseGlyphIndexMap[i];
-                                        character = parseInt(character);
-                                        coverage2.push(String.fromCharCode(character));
-                                    }
-                                });
-
-                                const components = ligature.components.map((component) => {
-                                    component = reverseGlyphIndexMap[component];
-                                    component = parseInt(component);
-                                    return String.fromCharCode(component);
-                                });
-                                console.log(coverage2[i] + components.join(""), ligature.ligGlyph);
+                    });
+                }
+                else {
+                    subtable.ligatureSets.forEach((set, i) => {
+                        set.forEach((ligature) => {
+                            const coverage2 = [];
+                            subtable.coverage.ranges.forEach((coverage) => {
+                                for (let i = coverage.start; i <= coverage.end; i++) {
+                                    let character = reverseGlyphIndexMap[i];
+                                    character = parseInt(character);
+                                    coverage2.push(String.fromCharCode(character));
+                                }
                             });
-                        });
-                    }
 
-                });
+                            const components = ligature.components.map((component) => {
+                                component = reverseGlyphIndexMap[component];
+                                component = parseInt(component);
+                                return String.fromCharCode(component);
+                            });
+
+                            const name = coverage2[i] + components.join("");
+                            // console.log(name, ligature.ligGlyph);
+
+                            const glyph = this.font.glyphs.get(ligature.ligGlyph);
+                            glyph.name = name;
+                        });
+                    });
+                }
             });
         });
     }
