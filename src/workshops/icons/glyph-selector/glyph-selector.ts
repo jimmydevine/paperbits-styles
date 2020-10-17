@@ -3,8 +3,8 @@ import * as ko from "knockout";
 import * as opentype from "opentype.js";
 import template from "./glyph-selector.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
-import { OpenTypeFontGlyph } from "../../../contracts/openType/openTypeFontGlyph";
-import { OpenTypeFont } from "../../../contracts/openType/openTypeFont";
+import { OpenTypeFontGlyph } from "../../../openType/openTypeFontGlyph";
+import { OpenTypeFont } from "../../../openType/openTypeFont";
 
 @Component({
     selector: "glyph-selector",

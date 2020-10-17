@@ -200,7 +200,9 @@ export class DefaultStyleCompiler implements StyleCompiler {
         }
 
         if (themeContract.icons) {
-            for (const iconName of Object.keys(themeContract.icons)) {
+            const iconNames = Object.keys(themeContract.icons);
+
+            for (const iconName of iconNames) {
                 const icon = themeContract.icons[iconName];
                 const formattedUnicode = formatUnicode(icon.unicode);
                 const iconStyleSelector = `icon-${Utils.camelCaseToKebabCase(iconName)}`;

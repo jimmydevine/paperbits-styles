@@ -7,7 +7,7 @@ import { Component, OnMounted, OnDestroyed } from "@paperbits/common/ko/decorato
 import { IStyleGroup, Styleable, VariationContract, StyleManager, StyleCompiler } from "@paperbits/common/styles";
 import { View, ViewManager, ViewManagerMode, IHighlightConfig, IContextCommandSet } from "@paperbits/common/ui";
 import { StyleService } from "../styleService";
-import { FontContract, ColorContract, ShadowContract, LinearGradientContract, GlyphContract } from "../contracts";
+import { FontContract, ColorContract, ShadowContract, LinearGradientContract, FontGlyphContract } from "../contracts";
 import { StyleItem } from "../models/styleItem";
 import { ComponentStyle } from "../contracts/componentStyle";
 import { formatUnicode } from "../styleUitls";
@@ -581,13 +581,10 @@ export class StyleGuide {
                             return `Are you sure you want to delete this icon?`;
                         },
                         onConfirm: async () => {
-                            console.log(style);
-                            debugger;
-                            // this.styleService.removeIcon()
-
-                            // this.removeStyle(style);
-                            // this.viewManager.clearContextualEditors();
-                            // this.viewManager.notifySuccess("Styles", `Style "${style.displayName}" was deleted.`);
+                            await this.styleService.removeIcon(style.key);
+                            await this.applyChanges();
+                            this.viewManager.clearContextualEditors();
+                            this.viewManager.notifySuccess("Styles", `Style "${style.displayName}" was deleted.`);
                         },
                         onDecline: () => {
                             this.viewManager.clearContextualEditors();

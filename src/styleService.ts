@@ -1,15 +1,14 @@
 import * as _ from "lodash";
 import * as Utils from "@paperbits/common/utils";
 import * as Objects from "@paperbits/common/objects";
-import * as opentype from "opentype.js";
-import { IBlobStorage, IObjectStorage } from "@paperbits/common/persistence";
-import { ThemeContract, ColorContract, ShadowContract, LinearGradientContract, GlyphContract, FontContract } from "./contracts";
+import { IObjectStorage } from "@paperbits/common/persistence";
+import { ThemeContract, ColorContract, ShadowContract, LinearGradientContract, FontGlyphContract, FontContract } from "./contracts";
 import { StyleItem } from "./models/styleItem";
 import { ComponentStyle } from "./contracts/componentStyle";
 import { StyleHandler, VariationContract } from "@paperbits/common/styles";
-import { IconsFontBlobKey, StylePrimitives } from "./constants";
-import { OpenTypeFont } from "./contracts/openType/openTypeFont";
-import { OpenTypeFontGlyph } from "./contracts/openType/openTypeFontGlyph";
+import { StylePrimitives } from "./constants";
+import { OpenTypeFontGlyph } from "./openType/openTypeFontGlyph";
+import { FontManager } from "./openType";
 
 
 const stylesPath = "styles";
@@ -17,8 +16,8 @@ const stylesPath = "styles";
 export class StyleService {
     constructor(
         private readonly objectStorage: IObjectStorage,
-        private readonly blobStorage: IBlobStorage,
-        private readonly styleHandlers: StyleHandler[]
+        private readonly styleHandlers: StyleHandler[],
+        private readonly fontManager: FontManager
     ) { }
 
     public async getStyles(): Promise<ThemeContract> {
@@ -309,92 +308,20 @@ export class StyleService {
         return referencedStyles;
     }
 
-
-    public async makeFont(styles: ThemeContract, newGlyph: OpenTypeFontGlyph): Promise<void> {
-        let font: OpenTypeFont;
-        let iconFont: FontContract = Objects.getObjectAt<FontContract>("fonts/icons", styles);
-        const glyphs = [];
-        const advanceWidths = []; // capturing advanceWidths (overcoming bug in openfont.js library)
-
-        if (iconFont) {
-            const fontUrl = iconFont.variants[0].file;
-            font = await opentype.load(fontUrl, null, { lowMemory: true });
-
-            for (let index = 0; index < font.numGlyphs; index++) {
-                const glyphInFont = font.glyphs.get(index);
-                glyphs.push(glyphInFont);
-                advanceWidths.push(glyphInFont.advanceWidth);
-            }
-        }
-        else {
-
-
-            const notdefGlyph = new opentype.Glyph({
-                name: ".notdef",
-                unicode: 0,
-                advanceWidth: 650,
-                path: new opentype.Path()
-            });
-
-            glyphs.push(notdefGlyph);
-            advanceWidths.push(notdefGlyph.advanceWidth);
-        }
-
-        if (!newGlyph.name) {
-            newGlyph.name = "Icon";
-        }
-
-        glyphs.push(newGlyph);
-        advanceWidths.push(newGlyph.advanceWidth);
-
-        font = new opentype.Font({
-            familyName: "MyIcons",
-            styleName: "Medium",
-            unitsPerEm: 400,
-            ascender: 800,
-            descender: -200,
-            glyphs: glyphs
-        });
-
-        // Restoring advanceWidth
-        glyphs.forEach((x, index) => x.advanceWidth = advanceWidths[index]);
-
-        const fontArrayBuffer = font.toArrayBuffer();
-
-        await this.blobStorage.uploadBlob(IconsFontBlobKey, new Uint8Array(fontArrayBuffer), "font/ttf");
-        const downloadUrl = await this.blobStorage.getDownloadUrl(IconsFontBlobKey);
-
-        iconFont = {
-            displayName: "Icons",
-            family: "Icons",
-            key: "fonts/icons",
-            variants: [
-                {
-                    file: downloadUrl,
-                    style: "normal",
-                    weight: "400"
-                }
-            ]
-        };
-
-        Objects.setValue("fonts/icons", styles, iconFont);
-    }
-
     public async addIcon(glyph: OpenTypeFontGlyph): Promise<void> {
         const styles = await this.getStyles();
-
-        await this.makeFont(styles, glyph);
-
-        const identifier = Utils.identifier();
-        const icon: GlyphContract = {
-            key: `icons/${identifier}`,
-            name: glyph.name,
-            displayName: glyph.name,
-            unicode: glyph.unicode
-        };
-
-        Objects.setValue(`icons/${identifier}`, styles, icon);
-
+        await this.fontManager.addGlyph(styles, glyph);
         await this.updateStyles(styles);
+    }
+
+    public async removeIcon(iconKey: string): Promise<void> {
+        const styles = await this.getStyles();
+
+        const icon = Objects.getObjectAt<FontGlyphContract>(iconKey, styles);
+
+        if (icon) {
+            await this.fontManager.removeGlyph(styles, icon.unicode);
+            await this.removeStyle(iconKey);
+        }
     }
 }
