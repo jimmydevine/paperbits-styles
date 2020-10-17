@@ -20,6 +20,7 @@ export interface FontFamiliyViewModel {
     template: template
 })
 export class GlyphSelector {
+    public readonly working: ko.Observable<boolean>;
     private originalCategories: any;
     public glyphs: ko.ObservableArray;
     public allGlyphs: any[];
@@ -28,6 +29,7 @@ export class GlyphSelector {
     public readonly categories: ko.Observable<{ name: string, items: any[] }[]>;
 
     constructor() {
+        this.working = ko.observable(true);
         this.glyphs = ko.observableArray([]);
         this.allGlyphs = [];
         this.pages = ko.observableArray();
@@ -54,12 +56,10 @@ export class GlyphSelector {
         this.searchPattern
             .extend(ChangeRateLimit)
             .subscribe(this.searchIcons);
-
-        this.searchIcons("");
     }
 
     private async loadWidgetOrders(): Promise<void> {
-        // this.working(true);
+        this.working(true);
 
         const fonts: FontContract[] = [{
             displayName: "Font Awesome icons",
@@ -73,18 +73,18 @@ export class GlyphSelector {
                 }
             ]
         },
-            {
-                displayName: "Material Design icons",
-                family: "Material",
-                key: "fonts/default",
-                variants: [
-                    {
-                        file: "https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf",
-                        style: "normal",
-                        weight: "400"
-                    }
-                ]
-            }
+        {
+            displayName: "Material Design icons",
+            family: "Material",
+            key: "fonts/default",
+            variants: [
+                {
+                    file: "https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf",
+                    style: "normal",
+                    weight: "400"
+                }
+            ]
+        }
         ];
 
         // this.fonts();
@@ -115,7 +115,6 @@ export class GlyphSelector {
                 glyphs.push({ index: index, name: glyph.name });
             }
 
-            debugger;
             groups.push({
                 name: font.displayName,
                 font: openTypeFont,
@@ -125,11 +124,11 @@ export class GlyphSelector {
 
         this.originalCategories = groups;
 
-        this.categories(this.originalCategories);
-        // this.working(false);
+        this.searchIcons();
     }
 
-    private searchIcons(pattern: string): void {
+    private searchIcons(pattern: string = ""): void {
+        this.working(true);
         pattern = pattern.toLowerCase();
 
         const filteredCategories = this.originalCategories
@@ -141,6 +140,7 @@ export class GlyphSelector {
             .filter(x => x.items.length > 0);
 
         this.categories(filteredCategories);
+        this.working(false);
     }
 
     public async selectGlyph(glyphInfo: any): Promise<void> {
