@@ -12,7 +12,8 @@ import { IBlobStorage } from "@paperbits/common/persistence";
     template: template
 })
 export class GlyphImport {
-    public libraries: ko.ObservableArray;
+    public readonly libraries: ko.ObservableArray;
+    public readonly searchPattern: ko.Observable<string>;
 
     constructor(private readonly styleService: StyleService) {
         this.libraries = ko.observableArray([
@@ -32,6 +33,7 @@ export class GlyphImport {
 
             // https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf
         ]);
+        this.searchPattern = ko.observable("");
     }
 
     @Event()

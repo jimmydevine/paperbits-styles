@@ -5,6 +5,7 @@ import template from "./glyph-selector.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
 import { OpenTypeFontGlyph } from "../../../openType/openTypeFontGlyph";
 import { OpenTypeFont } from "../../../openType/openTypeFont";
+import { ChangeRateLimit } from "@paperbits/common/ko/consts";
 
 @Component({
     selector: "glyph-selector",
@@ -13,17 +14,23 @@ import { OpenTypeFont } from "../../../openType/openTypeFont";
 export class GlyphSelector {
     public font: OpenTypeFont;
     public glyphs: ko.ObservableArray;
+    public allGlyphs: any[];
     public pages: ko.ObservableArray;
 
     constructor() {
         this.glyphs = ko.observableArray([]);
+        this.allGlyphs = [];
         this.pages = ko.observableArray();
         this.fontSource = ko.observable();
+        this.searchPattern = ko.observable("");
         this.selectGlyph = this.selectGlyph.bind(this);
     }
 
     @Param()
     public fontSource: ko.Observable<string>;
+
+    @Param()
+    public searchPattern: ko.Observable<string>;
 
     @Event()
     public onSelect: (glyph: any) => void;
@@ -35,6 +42,7 @@ export class GlyphSelector {
         this.font = font;
 
         this.parseLigatures(font);
+        const searchPattern = this.searchPattern();
 
         for (let index = 0; index < this.font.numGlyphs; index++) {
             const glyph: OpenTypeFontGlyph = this.font.glyphs.get(index);
@@ -43,8 +51,26 @@ export class GlyphSelector {
                 continue;
             }
 
-            this.glyphs.push({ index: index, name: glyph.name });
+            if (!glyph.name.toLowerCase().includes(searchPattern.toLowerCase())) {
+                continue;
+            }
+
+            this.allGlyphs.push({ index: index, name: glyph.name });
         }
+
+        this.searchPattern
+            .extend(ChangeRateLimit)
+            .subscribe(this.searchIcons);
+
+        this.searchIcons();
+    }
+
+    private searchIcons(): void {
+        const searchPattern = this.searchPattern().toLowerCase();
+
+        const filteredGlyphs = this.allGlyphs.filter(glyph => glyph.name.toLowerCase().includes(searchPattern));
+
+        this.glyphs(filteredGlyphs);
     }
 
     public async selectGlyph(glyphInfo: any): Promise<void> {

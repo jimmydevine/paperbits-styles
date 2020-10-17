@@ -1,8 +1,16 @@
 <div class="flex flex-column flex-item flex-item-grow" role="list" data-bind="scrollable: true">
+    <fieldset class="flex-item form">
+        <div class="form-group">
+            <input class="form-control" type="search" role="searchbox"
+                data-bind="textInput: searchPattern, valueUpdate: 'keyup', focus: true" placeholder="Search icons..."
+                aria-label="Search widgets" aria-controls="searchResult" />
+        </div>
+    </fieldset>
+
     <!-- ko foreach: { data: libraries, as: 'library' } -->
     <div class="flex-item">
         <h2 class="list-section-label" data-bind="text: library.displayName"></h2>
-        <glyph-selector params="{ fontSource: library.sourceUrl, onSelect: $component.addIcon }">
+        <glyph-selector params="{ fontSource: library.sourceUrl, onSelect: $component.addIcon, searchPattern: $component.searchPattern }">
         </glyph-selector>
     </div>
     <!-- /ko -->
