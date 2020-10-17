@@ -137,7 +137,7 @@ export class StyleGuide {
         const view: View = {
             heading: "Add icons",
             component: {
-                name: "glyph-import",
+                name: "glyph-selector",
                 params: {
                     onSelect: () => {
                         this.viewManager.closeView();

@@ -4,7 +4,6 @@ import template from "./glyph-import.html";
 import { Component, Event } from "@paperbits/common/ko/decorators";
 import { StyleService } from "../../../styleService";
 import { OpenTypeFontGlyph } from "../../../openType/openTypeFontGlyph";
-import { IBlobStorage } from "@paperbits/common/persistence";
 
 
 @Component({

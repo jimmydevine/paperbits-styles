@@ -324,4 +324,13 @@ export class StyleService {
             await this.removeStyle(iconKey);
         }
     }
+
+    public async getIconFontUrl(): Promise<string> {
+        const styles = await this.getStyles();
+        const iconFont: FontContract = Objects.getObjectAt<FontContract>("fonts/icons", styles);
+
+        return iconFont
+            ? iconFont.variants[0].file
+            : null;
+    }
 }

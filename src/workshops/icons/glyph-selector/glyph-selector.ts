@@ -6,28 +6,40 @@ import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorat
 import { OpenTypeFontGlyph } from "../../../openType/openTypeFontGlyph";
 import { OpenTypeFont } from "../../../openType/openTypeFont";
 import { ChangeRateLimit } from "@paperbits/common/ko/consts";
+import { FontContract } from "../../../contracts";
+
+
+export interface FontFamiliyViewModel {
+    name: string;
+    glyphs: ko.ObservableArray<any>;
+}
+
 
 @Component({
     selector: "glyph-selector",
     template: template
 })
 export class GlyphSelector {
-    public font: OpenTypeFont;
+    private originalCategories: any;
     public glyphs: ko.ObservableArray;
     public allGlyphs: any[];
     public pages: ko.ObservableArray;
+
+    public readonly categories: ko.Observable<{ name: string, items: any[] }[]>;
 
     constructor() {
         this.glyphs = ko.observableArray([]);
         this.allGlyphs = [];
         this.pages = ko.observableArray();
-        this.fontSource = ko.observable();
+        this.fonts = ko.observableArray();
         this.searchPattern = ko.observable("");
         this.selectGlyph = this.selectGlyph.bind(this);
+
+        this.categories = ko.observable<{ name: string, font: any, items: any[] }[]>();
     }
 
     @Param()
-    public fontSource: ko.Observable<string>;
+    public fonts: ko.ObservableArray<FontContract>;
 
     @Param()
     public searchPattern: ko.Observable<string>;
@@ -36,53 +48,111 @@ export class GlyphSelector {
     public onSelect: (glyph: any) => void;
 
     @OnMounted()
-    public async init(): Promise<void> {
-        const fontUrl = this.fontSource();
-        const font = await opentype.load(fontUrl, null, { lowMemory: false });
-        this.font = font;
-
-        this.parseLigatures(font);
-        const searchPattern = this.searchPattern();
-
-        for (let index = 0; index < this.font.numGlyphs; index++) {
-            const glyph: OpenTypeFontGlyph = this.font.glyphs.get(index);
-
-            if (!glyph.unicode || glyph.unicode.toString().length < 4) {
-                continue;
-            }
-
-            if (!glyph.name.toLowerCase().includes(searchPattern.toLowerCase())) {
-                continue;
-            }
-
-            this.allGlyphs.push({ index: index, name: glyph.name });
-        }
+    public async initialize(): Promise<void> {
+        await this.loadWidgetOrders();
 
         this.searchPattern
             .extend(ChangeRateLimit)
             .subscribe(this.searchIcons);
 
-        this.searchIcons();
+        this.searchIcons("");
     }
 
-    private searchIcons(): void {
-        const searchPattern = this.searchPattern().toLowerCase();
+    private async loadWidgetOrders(): Promise<void> {
+        // this.working(true);
 
-        const filteredGlyphs = this.allGlyphs.filter(glyph => glyph.name.toLowerCase().includes(searchPattern));
+        const fonts: FontContract[] = [{
+            displayName: "Font Awesome icons",
+            family: "Font Awesome",
+            key: "fonts/default",
+            variants: [
+                {
+                    file: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf",
+                    style: "normal",
+                    weight: "400"
+                }
+            ]
+        },
+            {
+                displayName: "Material Design icons",
+                family: "Material",
+                key: "fonts/default",
+                variants: [
+                    {
+                        file: "https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf",
+                        style: "normal",
+                        weight: "400"
+                    }
+                ]
+            }
+        ];
 
-        this.glyphs(filteredGlyphs);
+        // this.fonts();
+
+        const groups = [];
+
+        for (const font of fonts) {
+            const fontUrl = font.variants[0].file;
+
+            const openTypeFont = await opentype.load(fontUrl, null, { lowMemory: false });
+
+            this.parseLigatures(openTypeFont);
+            const searchPattern = this.searchPattern();
+
+            const glyphs = [];
+
+            for (let index = 0; index < openTypeFont.numGlyphs; index++) {
+                const glyph: OpenTypeFontGlyph = openTypeFont.glyphs.get(index);
+
+                if (!glyph.unicode || glyph.unicode.toString().length < 4) {
+                    continue;
+                }
+
+                if (!glyph.name.toLowerCase().includes(searchPattern.toLowerCase())) {
+                    continue;
+                }
+
+                glyphs.push({ index: index, name: glyph.name });
+            }
+
+            debugger;
+            groups.push({
+                name: font.displayName,
+                font: openTypeFont,
+                items: glyphs
+            });
+        }
+
+        this.originalCategories = groups;
+
+        this.categories(this.originalCategories);
+        // this.working(false);
+    }
+
+    private searchIcons(pattern: string): void {
+        pattern = pattern.toLowerCase();
+
+        const filteredCategories = this.originalCategories
+            .map(x => ({
+                name: x.name,
+                font: x.font,
+                items: x.items.filter(glyph => glyph.name.toLowerCase().includes(pattern))
+            }))
+            .filter(x => x.items.length > 0);
+
+        this.categories(filteredCategories);
     }
 
     public async selectGlyph(glyphInfo: any): Promise<void> {
-        if (!this.font) {
-            return;
-        }
+        // if (!this.openTypeFont) {
+        //     return;
+        // }
 
-        const glyph = this.font.glyphs.get(glyphInfo.index);
+        // const glyph = this.openTypeFont.glyphs.get(glyphInfo.index);
 
-        if (this.onSelect) {
-            this.onSelect(glyph);
-        }
+        // if (this.onSelect) {
+        //     this.onSelect(glyph);
+        // }
     }
 
     public parseLigatures(font: OpenTypeFont): void {
@@ -113,7 +183,7 @@ export class GlyphSelector {
                                 return String.fromCharCode(component);
                             });
                             const name = String.fromCharCode(coverage1) + components.join("");
-                            const glyph = this.font.glyphs.get(ligature.ligGlyph);
+                            const glyph = font.glyphs.get(ligature.ligGlyph);
                             glyph.name = name;
                         });
                     });
@@ -137,7 +207,7 @@ export class GlyphSelector {
                             });
 
                             const name = coverage2[i] + components.join("");
-                            const glyph = this.font.glyphs.get(ligature.ligGlyph);
+                            const glyph = font.glyphs.get(ligature.ligGlyph);
                             glyph.name = name;
                         });
                     });
