@@ -1,9 +1,4 @@
-export interface OpenTypeFontGlyphPoint {
-    lastPointOfContour: boolean;
-    onCurve: boolean;
-    x: number;
-    y: number;
-}
+import { OpenTypeFontGlyphPoint } from "./openTypeFontGlyphPoint";
 
 export interface OpenTypeFontGlyph {
     name: string;

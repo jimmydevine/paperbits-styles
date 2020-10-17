@@ -297,7 +297,7 @@ export class StyleGuide {
         const fonts = styles.fonts
             ? Object.values(styles.fonts)
             : [];
-        this.fonts(fonts);
+        this.fonts(fonts.filter(x => x.key !== ("fonts/icons")));
 
         const colors = styles.colors
             ? Object.values(styles.colors)
@@ -314,13 +314,16 @@ export class StyleGuide {
             : [];
         this.shadows(this.sortByDisplayName(shadows));
 
-        const icons = Object.values(styles.icons).map(icon => ({
-            key: icon.key,
-            class: Utils.camelCaseToKebabCase(icon.key.replace("icons/", "icon-")),
-            displayName: icon.displayName,
-            unicode: formatUnicode(icon.unicode)
-        }));
-        this.icons(icons);
+        const icons = styles.icons
+            ? Object.values(styles.icons).map(icon => ({
+                key: icon.key,
+                class: Utils.camelCaseToKebabCase(icon.key.replace("icons/", "icon-")),
+                displayName: icon.displayName,
+                unicode: formatUnicode(icon.unicode)
+            }))
+            : [];
+
+        this.icons(this.sortByDisplayName(icons));
 
         const textStylesVariations = await this.styleService.getVariations("globals", "body");
         this.textStyles(this.sortByDisplayName(textStylesVariations));

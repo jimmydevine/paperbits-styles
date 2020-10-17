@@ -3,8 +3,8 @@ import * as ko from "knockout";
 import * as opentype from "opentype.js";
 import template from "./glyph-selector.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
-import { OpenTypeFontGlyph } from "../../../contracts/fontGlyph";
-import { OpenTypeFont } from "../../../contracts/openTypeFont";
+import { OpenTypeFontGlyph } from "../../../contracts/openType/openTypeFontGlyph";
+import { OpenTypeFont } from "../../../contracts/openType/openTypeFont";
 
 @Component({
     selector: "glyph-selector",
@@ -32,8 +32,6 @@ export class GlyphSelector {
     public async init(): Promise<void> {
         const fontUrl = this.fontSource();
         const font = await opentype.load(fontUrl, null, { lowMemory: false });
-        //   font.download();
-
         this.font = font;
 
         this.parseLigatures(font);
