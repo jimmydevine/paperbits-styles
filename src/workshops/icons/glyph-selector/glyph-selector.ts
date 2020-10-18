@@ -1,6 +1,5 @@
 
 import * as ko from "knockout";
-import * as opentype from "opentype.js";
 import * as Utils from "@paperbits/common";
 import template from "./glyph-selector.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
@@ -8,22 +7,14 @@ import { OpenTypeFontGlyph } from "../../../openType/openTypeFontGlyph";
 import { OpenTypeFont } from "../../../openType/openTypeFont";
 import { ChangeRateLimit } from "@paperbits/common/ko/consts";
 import { FontContract } from "../../../contracts";
-import { StyleCompiler } from "@paperbits/common/styles";
 import { StyleService } from "../../../styleService";
 import { formatUnicode } from "../../../styleUitls";
-
-
-export interface FontFamiliyViewModel {
-    name: string;
-    glyphs: ko.ObservableArray<any>;
-}
 
 export interface GlyphItem {
     name: string;
     font: OpenTypeFont;
     glyph: OpenTypeFontGlyph;
 }
-
 
 @Component({
     selector: "glyph-selector",
@@ -32,12 +23,8 @@ export interface GlyphItem {
 export class GlyphSelector {
     public readonly working: ko.Observable<boolean>;
     public allIcons: any[];
-
     public icons: ko.ObservableArray;
-
     public compiledFontStyles: ko.Observable<string>;
-
-    public readonly categories: ko.Observable<{ name: string, items: any[] }[]>;
 
     constructor(
         private readonly styleService: StyleService,
