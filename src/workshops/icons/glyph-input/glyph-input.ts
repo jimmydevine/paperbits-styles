@@ -45,17 +45,11 @@ export class GlyphInput {
         let key: string = null;
 
         if (icon) {
-            const styles = await this.styleService.getStyles();
-            const icons = Object.values(styles.icons);
-            const iconContract = icons.find(x => x.name === icon.name);
-
-            this.selectedIconDisplay(iconContract.displayName);
-
-            key = iconContract.key;
-
-            if (this.onChange) {
-                this.onChange(iconContract.key);
-            }
+            this.selectedIconDisplay(icon.displayName);
+            key = icon.key;
+        }
+        else {
+            this.selectedIconDisplay(`Click to select icon...`);
         }
 
         if (this.onChange) {

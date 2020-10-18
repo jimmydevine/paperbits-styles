@@ -64,8 +64,6 @@ export class GlyphImport {
         this.searchPattern
             .extend(ChangeRateLimit)
             .subscribe(this.searchIcons);
-
-        console.log(this.showFontNames());
     }
 
     private async loadWidgetOrders(): Promise<void> {

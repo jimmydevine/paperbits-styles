@@ -388,6 +388,54 @@ export class DefaultStyleCompiler implements StyleCompiler {
         return stateStyle;
     }
 
+    public async getIconFontStylesCss(): Promise<string> {
+        const themeContract = await this.getStyles();
+        const fontsPlugin = new FontsStylePlugin(this.mediaPermalinkResolver, themeContract);
+        const fontFaces = await fontsPlugin.contractToFontFaces();
+        const iconFontFace = fontFaces.find(x => x.fontFamily === "Icons");
+
+        const styleSheet = new StyleSheet();
+
+        styleSheet.fontFaces.push(iconFontFace);
+
+        const iconBaseStyle = new Style("icon");
+
+        iconBaseStyle.addRule(new StyleRule("display", `inline-block`));
+        iconBaseStyle.addRule(new StyleRule("font-family", "Icons"));
+        iconBaseStyle.addRule(new StyleRule("font-style", "normal"));
+        iconBaseStyle.addRule(new StyleRule("font-weight", "normal"));
+        iconBaseStyle.addRule(new StyleRule("font-size", "1em"));
+        iconBaseStyle.addRule(new StyleRule("vertical-align", "middle"));
+        iconBaseStyle.addRule(new StyleRule("speak", "none"));
+        iconBaseStyle.addRule(new StyleRule("text-transform", "none"));
+        iconBaseStyle.addRule(new StyleRule("-webkit-font-smoothing", "antialiased"));
+        iconBaseStyle.addRule(new StyleRule("-moz-osx-font-smoothing", "grayscale"));
+
+        styleSheet.styles.push(iconBaseStyle);
+
+        if (themeContract.icons) {
+            const iconNames = Object.keys(themeContract.icons);
+
+            for (const iconName of iconNames) {
+                const icon = themeContract.icons[iconName];
+                const formattedUnicode = formatUnicode(icon.unicode);
+                const iconStyleSelector = `icon-${Utils.camelCaseToKebabCase(iconName)}`;
+                const iconStyle = new Style(iconStyleSelector);
+                const pseudoStyle = new Style("before");
+
+                pseudoStyle.addRule(new StyleRule("content", `'\\\\${formattedUnicode}'`));
+                iconStyle.pseudoStyles.push(pseudoStyle);
+
+                styleSheet.styles.push(iconStyle);
+            }
+        }
+
+        const compiler = new JssCompiler();
+        const css = compiler.compile(styleSheet);
+
+        return css;
+    }
+
     public async getFontsStylesCss(): Promise<string> {
         const themeContract = await this.getStyles();
         const fontsPlugin = new FontsStylePlugin(this.mediaPermalinkResolver, themeContract);
