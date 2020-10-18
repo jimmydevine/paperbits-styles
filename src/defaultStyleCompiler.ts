@@ -209,8 +209,6 @@ export class DefaultStyleCompiler implements StyleCompiler {
                 const iconStyle = new Style(iconStyleSelector);
                 const pseudoStyle = new Style("before");
 
-                console.log(iconStyleSelector);
-
                 pseudoStyle.addRule(new StyleRule("content", `'\\\\${formattedUnicode}'`));
                 iconStyle.pseudoStyles.push(pseudoStyle);
 
