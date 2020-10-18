@@ -11,6 +11,7 @@ import { FontContract, ColorContract, ShadowContract, LinearGradientContract, Fo
 import { StyleItem } from "../models/styleItem";
 import { ComponentStyle } from "../contracts/componentStyle";
 import { formatUnicode } from "../styleUitls";
+import { OpenTypeFontGlyph } from "../openType";
 
 @Component({
     selector: "style-guide",
@@ -134,12 +135,17 @@ export class StyleGuide {
     }
 
     public async addIcon(): Promise<void> {
+        const externalFonts = await this.styleService.getExternalIconFonts();
+
         const view: View = {
-            heading: "Add icons",
+            heading: "Add icon",
             component: {
                 name: "glyph-selector",
                 params: {
-                    onSelect: () => {
+                    fonts: externalFonts,
+                    showFontNames: true,
+                    onSelect: async (glyph: OpenTypeFontGlyph) => {
+                        await this.styleService.addIcon(glyph);
                         this.viewManager.closeView();
                         this.applyChanges();
                     }

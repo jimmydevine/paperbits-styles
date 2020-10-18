@@ -10,15 +10,16 @@
     <div class="flex-item flex-item-grow" role="list" data-bind="scrollable: true">
         <!-- ko foreach: { data: categories, as: 'category' } -->
         <div class="flex-item">
-            <h2 class="list-section-label" data-bind="text: category.name"></h2>
+            <!-- ko if: $component.showFontNames -->
+            <h2 class="text-center" data-bind="text: category.name"></h2>
+            <!-- /ko -->
             <!-- ko if: category.items.length > 0 -->
             <div class="flex flex-row flex-wrap flex-item flex-item-grow" role="list">
-                <!-- ko foreach: { data: category.items, as: 'glyph' } -->
-                <a href="#" data-bind="click: $component.selectGlyph, tooltip: glyph.name"
+                <!-- ko foreach: { data: category.items, as: 'item' } -->
+                <a href="#" data-bind="click: $component.selectGlyph, tooltip: item.name"
                     class="list-item list-item-icon">
-                    <canvas width="50" height="50" class="item"
-                        data-bind="fontGlyph: { font: category.font, glyphIndex: glyph.index }"></canvas>
-                    <div class="text-overflow" data-bind="text: glyph.name"></div>
+                    <canvas width="50" height="50" class="item" data-bind="fontGlyph: item"></canvas>
+                    <div class="text-overflow" data-bind="text: item.name"></div>
                 </a>
                 <!-- /ko -->
             </div>

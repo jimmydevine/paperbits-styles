@@ -14,6 +14,12 @@ export interface FontFamiliyViewModel {
     glyphs: ko.ObservableArray<any>;
 }
 
+export interface GlyphItem {
+    name: string;
+    font: OpenTypeFont;
+    glyph: OpenTypeFontGlyph;
+}
+
 
 @Component({
     selector: "glyph-selector",
@@ -36,7 +42,7 @@ export class GlyphSelector {
         this.fonts = ko.observableArray();
         this.searchPattern = ko.observable("");
         this.selectGlyph = this.selectGlyph.bind(this);
-
+        this.showFontNames = ko.observable();
         this.categories = ko.observable<{ name: string, font: any, items: any[] }[]>();
     }
 
@@ -45,6 +51,9 @@ export class GlyphSelector {
 
     @Param()
     public searchPattern: ko.Observable<string>;
+
+    @Param()
+    public showFontNames: ko.Observable<boolean>;
 
     @Event()
     public onSelect: (glyph: any) => void;
@@ -56,50 +65,22 @@ export class GlyphSelector {
         this.searchPattern
             .extend(ChangeRateLimit)
             .subscribe(this.searchIcons);
+
+        console.log(this.showFontNames());
     }
 
     private async loadWidgetOrders(): Promise<void> {
         this.working(true);
 
-        const fonts: FontContract[] = [{
-            displayName: "Font Awesome icons",
-            family: "Font Awesome",
-            key: "fonts/default",
-            variants: [
-                {
-                    file: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf",
-                    style: "normal",
-                    weight: "400"
-                }
-            ]
-        },
-        {
-            displayName: "Material Design icons",
-            family: "Material",
-            key: "fonts/default",
-            variants: [
-                {
-                    file: "https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf",
-                    style: "normal",
-                    weight: "400"
-                }
-            ]
-        }
-        ];
-
-        // this.fonts();
-
+        const fonts = this.fonts();
         const groups = [];
 
         for (const font of fonts) {
             const fontUrl = font.variants[0].file;
-
             const openTypeFont = await opentype.load(fontUrl, null, { lowMemory: false });
+            const glyphs: GlyphItem[] = [];
 
             this.parseLigatures(openTypeFont);
-            const searchPattern = this.searchPattern();
-
-            const glyphs = [];
 
             for (let index = 0; index < openTypeFont.numGlyphs; index++) {
                 const glyph: OpenTypeFontGlyph = openTypeFont.glyphs.get(index);
@@ -108,11 +89,11 @@ export class GlyphSelector {
                     continue;
                 }
 
-                if (!glyph.name.toLowerCase().includes(searchPattern.toLowerCase())) {
-                    continue;
-                }
-
-                glyphs.push({ index: index, name: glyph.name });
+                glyphs.push({
+                    font: openTypeFont,
+                    glyph: glyph,
+                    name: glyph.name
+                });
             }
 
             groups.push({
@@ -132,27 +113,21 @@ export class GlyphSelector {
         pattern = pattern.toLowerCase();
 
         const filteredCategories = this.originalCategories
-            .map(x => ({
-                name: x.name,
-                font: x.font,
-                items: x.items.filter(glyph => glyph.name.toLowerCase().includes(pattern))
+            .map(category => ({
+                name: category.name,
+                font: category.font,
+                items: category.items.filter(glyph => glyph.name.toLowerCase().includes(pattern))
             }))
-            .filter(x => x.items.length > 0);
+            .filter(category => category.items.length > 0);
 
         this.categories(filteredCategories);
         this.working(false);
     }
 
-    public async selectGlyph(glyphInfo: any): Promise<void> {
-        // if (!this.openTypeFont) {
-        //     return;
-        // }
-
-        // const glyph = this.openTypeFont.glyphs.get(glyphInfo.index);
-
-        // if (this.onSelect) {
-        //     this.onSelect(glyph);
-        // }
+    public async selectGlyph(glyphItem: GlyphItem): Promise<void> {
+        if (this.onSelect) {
+            this.onSelect(glyphItem.glyph);
+        }
     }
 
     public parseLigatures(font: OpenTypeFont): void {

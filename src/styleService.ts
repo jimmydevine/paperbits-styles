@@ -325,12 +325,38 @@ export class StyleService {
         }
     }
 
-    public async getIconFontUrl(): Promise<string> {
+    public async getIconFont(): Promise<FontContract> {
         const styles = await this.getStyles();
         const iconFont: FontContract = Objects.getObjectAt<FontContract>("fonts/icons", styles);
 
-        return iconFont
-            ? iconFont.variants[0].file
-            : null;
+        return iconFont;
+    }
+
+    public async getExternalIconFonts(): Promise<FontContract[]> {
+        return [{
+            displayName: "Font Awesome icons",
+            family: "Font Awesome",
+            key: "fonts/default",
+            variants: [
+                {
+                    file: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-regular-400.ttf",
+                    style: "normal",
+                    weight: "400"
+                }
+            ]
+        },
+        {
+            displayName: "Material Design icons",
+            family: "Material",
+            key: "fonts/default",
+            variants: [
+                {
+                    file: "https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/MaterialIcons-Regular.ttf",
+                    style: "normal",
+                    weight: "400"
+                }
+            ]
+        }];
     }
 }
+

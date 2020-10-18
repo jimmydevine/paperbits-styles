@@ -16,7 +16,7 @@ ko.bindingHandlers["fontGlyph"] = {
             canvas.getContext("2d").scale(pixelRatio, pixelRatio);
         }
 
-        const iconConfig: any = valueAccessor();
+        const glyphItem: any = valueAccessor();
         const cellWidth = 50;
         const cellHeight = 50;
         const cellMarginTop = 10;
@@ -25,25 +25,29 @@ ko.bindingHandlers["fontGlyph"] = {
 
         const w = cellWidth - cellMarginLeftRight * 2;
         const h = cellHeight - cellMarginTop - cellMarginBottom;
-        const head = iconConfig.font.tables.head;
+
+        const head = glyphItem.font.tables.head;
         const maxHeight = head.yMax - head.yMin;
 
         const fontScale = Math.min(w / (head.xMax - head.xMin), h / maxHeight);
-        const fontSize = fontScale * iconConfig.font.unitsPerEm;
+        const fontSize = fontScale * glyphItem.font.unitsPerEm;
         const fontBaseline = cellMarginTop + h * head.yMax / maxHeight;
 
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, cellWidth, cellHeight);
 
-        if (iconConfig.glyphIndex >= iconConfig.font.numGlyphs) {
+        if (glyphItem.glyphIndex >= glyphItem.font.numGlyphs) {
             return;
         }
 
-        const glyph = iconConfig.font.glyphs.get(iconConfig.glyphIndex),
-            glyphWidth = glyph.advanceWidth * fontScale,
-            xmin = (cellWidth - glyphWidth) / 2,
-            xmax = (cellWidth + glyphWidth) / 2,
-            x0 = xmin;
+        // const glyph = glyphInfo.font.glyphs.get(glyphInfo.glyphIndex);
+
+        const glyph = glyphItem.glyph;
+
+        const glyphWidth = glyph.advanceWidth * fontScale;
+        const xmin = (cellWidth - glyphWidth) / 2;
+        const xmax = (cellWidth + glyphWidth) / 2;
+        const x0 = xmin;
 
         glyph.draw(ctx, x0, fontBaseline, fontSize);
     }
