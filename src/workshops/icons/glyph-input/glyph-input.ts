@@ -14,7 +14,7 @@ export class GlyphInput {
     public readonly iconFont: ko.Observable<FontContract>;
 
     constructor(private readonly styleService: StyleService) {
-        this.selectedIconDisplay = ko.observable();
+        this.selectedIconDisplay = ko.observable(`Click to select icon...`);
         this.iconFont = ko.observable();
     }
 
@@ -42,14 +42,24 @@ export class GlyphInput {
     }
 
     public async onGlyphSelected(icon: any): Promise<void> {
-        const styles = await this.styleService.getStyles();
-        const icons = Object.values(styles.icons);
-        const iconContract = icons.find(x => x.name === icon.name);
+        let key: string = null;
 
-        this.selectedIconDisplay(iconContract.displayName);
+        if (icon) {
+            const styles = await this.styleService.getStyles();
+            const icons = Object.values(styles.icons);
+            const iconContract = icons.find(x => x.name === icon.name);
+
+            this.selectedIconDisplay(iconContract.displayName);
+
+            key = iconContract.key;
+
+            if (this.onChange) {
+                this.onChange(iconContract.key);
+            }
+        }
 
         if (this.onChange) {
-            this.onChange(iconContract.key);
+            this.onChange(key);
         }
     }
 }

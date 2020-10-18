@@ -140,7 +140,7 @@ export class StyleGuide {
         const view: View = {
             heading: "Add icon",
             component: {
-                name: "glyph-selector",
+                name: "glyph-import",
                 params: {
                     fonts: externalFonts,
                     showFontNames: true,

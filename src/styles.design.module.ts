@@ -43,6 +43,7 @@ import { StyledBindingHandler } from "./ko/bindingHandlers";
 import { OptionSelectorEditor } from "./workshops/optionSelector/optionSelectorEditor";
 import { SizeEditor } from "./workshops/size/sizeEditor";
 import { GlyphSelector } from "./workshops/icons/glyph-selector/glyph-selector";
+import { GlyphImport } from "./workshops/icons/glyph-import/glyph-import";
 import { GlyphInput } from "./workshops/icons/glyph-input/glyph-input";
 
 export class StylesDesignModule implements IInjectorModule {
@@ -50,6 +51,7 @@ export class StylesDesignModule implements IInjectorModule {
         injector.bindModule(new StyleModule());
         injector.bind("fontSelector", FontSelector);
         injector.bind("glyphSelector", GlyphSelector);
+        injector.bind("glyphImport", GlyphImport);
         injector.bind("glyphInput", GlyphInput);
         injector.bind("googleFonts", GoogleFonts);
         injector.bind("typography", Typography);

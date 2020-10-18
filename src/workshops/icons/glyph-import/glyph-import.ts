@@ -1,7 +1,7 @@
 
 import * as ko from "knockout";
 import * as opentype from "opentype.js";
-import template from "./glyph-selector.html";
+import template from "./glyph-import.html";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
 import { OpenTypeFontGlyph } from "../../../openType/openTypeFontGlyph";
 import { OpenTypeFont } from "../../../openType/openTypeFont";
@@ -20,12 +20,11 @@ export interface GlyphItem {
     glyph: OpenTypeFontGlyph;
 }
 
-
 @Component({
-    selector: "glyph-selector",
+    selector: "glyph-import",
     template: template
 })
-export class GlyphSelector {
+export class GlyphImport {
     public readonly working: ko.Observable<boolean>;
     private originalCategories: any;
     public glyphs: ko.ObservableArray;
@@ -189,11 +188,5 @@ export class GlyphSelector {
                 }
             });
         });
-    }
-
-    public selectNone(): void {
-        if (this.onSelect) {
-            this.onSelect(null);
-        }
     }
 }

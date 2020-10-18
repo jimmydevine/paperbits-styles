@@ -1,9 +1,13 @@
-<div class="editor">
-    <h1>
-        Icons
-    </h1>
-    <hr />
-    <div class="flex-item flex-item-grow list" role="list" data-bind="scrollable: true">
+<div class="flex flex-column no-overflow ">
+    <fieldset class="flex-item form">
+        <div class="form-group">
+            <input class="form-control" type="search" role="searchbox"
+                data-bind="textInput: searchPattern, valueUpdate: 'keyup', focus: true" placeholder="Search icons..."
+                aria-label="Search widgets" aria-controls="searchResult" />
+        </div>
+    </fieldset>
+
+    <div class="flex-item flex-item-grow" role="list" data-bind="scrollable: true">
         <!-- ko foreach: { data: categories, as: 'category' } -->
         <div class="flex-item">
             <!-- ko if: $component.showFontNames -->
@@ -25,12 +29,5 @@
         <!-- ko if: working -->
         <spinner></spinner>
         <!-- /ko -->
-    </div>
-    
-    <div class="flex-item btn-group">
-        <button class="btn" data-bind="click: $component.selectNone">
-            <i class="paperbits-icon paperbits-ban"></i>
-            None
-        </button>
     </div>
 </div>
